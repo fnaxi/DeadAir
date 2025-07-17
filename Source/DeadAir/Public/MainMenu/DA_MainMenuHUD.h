@@ -25,7 +25,7 @@ protected:
 	virtual void BeginPlay() override;
 	
 	/** Main widget class for the main menu. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "DA|UserInterface")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UserInterface")
 	TSubclassOf<UUserWidget> MainWidgetClass;
 	
 };

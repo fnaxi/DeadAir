@@ -22,7 +22,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
-	UFUNCTION(BlueprintImplementableEvent, Category = "DA|DebugTool", DisplayName = "Spawn Debug Tool")
+	UFUNCTION(BlueprintImplementableEvent, Category = "DebugTool", DisplayName = "Spawn Debug Tool")
 	void K2_SpawnDebugTool();
 
 private:

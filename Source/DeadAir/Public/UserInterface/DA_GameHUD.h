@@ -25,7 +25,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	/** Player HUD widget class. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "DA|UserInterface")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UserInterface")
 	TSubclassOf<UUserWidget> PlayerHUDWidgetClass;
 	
 private:

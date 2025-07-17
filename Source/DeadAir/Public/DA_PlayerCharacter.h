@@ -40,41 +40,41 @@ protected:
 	TObjectPtr<class UDA_InventoryComponent> InventoryComponent;
 
 	/** Socket to attach a weapon to inside the HUDHands mesh. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DA|Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	FName GunSocketName = TEXT("GunSocket");
 	
 	/** Weapon bone names. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DA|Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	FName ScopeBoneName = TEXT("wpn_scope");
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DA|Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	FName SilencerBoneName = TEXT("wpn_silencer");
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DA|Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	FName GrenadeLauncherBoneName = TEXT("wpn_launcher");
 	
 	/** Input mapping context. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DA|Input")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	TObjectPtr<class UInputMappingContext> MappingContext;
 
 	/** Input axis for the movement. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DA|Input")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	TObjectPtr<class UInputAction> MoveInputAction;
 	
 	/** Input axis for camera look. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DA|Input")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	TObjectPtr<UInputAction> LookInputAction;
 
 	/** Input action for jump. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DA|Input")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	TObjectPtr<UInputAction> JumpInputAction;
 	
 	/** Input action for crouch. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DA|Input")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	TObjectPtr<UInputAction> CrouchInputAction;
 	
 	/** Input action for sprint. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DA|Input")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	TObjectPtr<UInputAction> SprintInputAction;
 	
 public:	
@@ -85,7 +85,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 	/** Is character sprinting or no. */
-	UFUNCTION(BlueprintCallable, Category = "DA|Movement")
+	UFUNCTION(BlueprintCallable, Category = "Movement")
 	bool IsSprinting() const;
 
 	/**

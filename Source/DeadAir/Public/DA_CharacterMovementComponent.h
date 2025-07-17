@@ -19,7 +19,7 @@ public:
 	UDA_CharacterMovementComponent();
 	
 	/** A modifier to apply when a character is sprinting. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "DA|Movement", meta = (ClampMin = "1.25", ClampMax = "10.0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", meta = (ClampMin = "1.25", ClampMax = "10.0"))
 	float SprintModifier = 1.5f;
 	
 	//BEGIN UMovementComponent Interface
