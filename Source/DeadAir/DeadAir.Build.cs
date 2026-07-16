@@ -11,9 +11,12 @@ public class DeadAir : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 		[
 			"Core",
-			"CoreUObject", 
-			"Engine", 
-			"InputCore"
+			"CoreUObject",
+			"Engine",
+			"InputCore",
+			
+			"HeadMountedDisplay",
+			"UMG"
 		]);
 
 		PrivateDependencyModuleNames.AddRange(
@@ -22,7 +25,7 @@ public class DeadAir : ModuleRules
 		]);
 
 		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+		PrivateDependencyModuleNames.AddRange(["Slate", "SlateCore"]);
 		
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
