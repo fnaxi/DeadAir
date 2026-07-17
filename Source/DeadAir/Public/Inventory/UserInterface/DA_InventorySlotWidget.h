@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Inventory/DA_InventoryComponent.h"
+#include "Inventory/DA_InventoryTypes.h"
 #include "DA_InventorySlotWidget.generated.h"
 
 class UDA_InventoryGridWidget;
@@ -12,13 +12,17 @@ class UDA_InventoryGridWidget;
 /**
  * 
  */
-UCLASS()
+UCLASS(PrioritizeCategories="Slot")
 class DEADAIR_API UDA_InventorySlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
-	UDA_InventorySlotWidget(const FObjectInitializer& ObjectInitializer);
+	UPROPERTY(Transient, BlueprintReadOnly, Category = "Slot")
+	FDA_InventorySlot SlotData;
+
+	UPROPERTY(Transient, BlueprintReadOnly, Category = "Slot")
+	UDA_InventoryGridWidget* ParentWidget;
 
 	UFUNCTION(BlueprintCallable, Category = "Slot")
 	void SetData(const FDA_InventorySlot& NewData, UDA_InventoryGridWidget* NewParentWidget);
@@ -32,16 +36,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Slot")
 	void SetSlotColor(const FSlateBrush& Brush);
 
-
 	virtual void NativeOnDragEnter(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual void NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
-
-
-	UPROPERTY(Transient, BlueprintReadOnly, Category = "Slot")
-	FDA_InventorySlot SlotData;
-
-	UPROPERTY(Transient, BlueprintReadOnly, Category = "Slot")
-	UDA_InventoryGridWidget* ParentWidget;
 };

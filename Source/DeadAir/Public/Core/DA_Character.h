@@ -19,12 +19,13 @@ public:
 	ADA_Character();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
+	// TODO(DA:) make BlueprintReadOnly or none at all
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Components")
 	TObjectPtr<class UDA_InventoryComponent> InventoryComponent;
 
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+	
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

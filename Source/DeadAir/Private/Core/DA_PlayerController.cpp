@@ -13,6 +13,7 @@ void ADA_PlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// Initialize inventory system
 	DA_ENSURE_ASSET(InventoryWidgetClass)
 	{
 		InventoryWidget = CreateWidget<UDA_InventoryWidget>(this, InventoryWidgetClass);

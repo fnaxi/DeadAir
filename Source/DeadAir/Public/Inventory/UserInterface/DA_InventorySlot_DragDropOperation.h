@@ -13,7 +13,4 @@ UCLASS()
 class DEADAIR_API UDA_InventorySlot_DragDropOperation : public UDragDropOperation
 {
 	GENERATED_BODY()
-
-public:
-	UDA_InventorySlot_DragDropOperation(const FObjectInitializer& ObjectInitializer);
 };

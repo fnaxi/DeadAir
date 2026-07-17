@@ -2,16 +2,8 @@
 
 
 #include "Inventory/UserInterface/DA_InventorySlotWidget.h"
-#include "Inventory/UserInterface/DA_InventoryCellWidget.h"
-#include "Inventory/UserInterface/DA_InventoryDraggedSlotWidget.h"
-#include "Inventory/UserInterface/DA_InventoryGridWidget.h"
-#include "Inventory/DA_InventoryItem.h"
-#include "Inventory/UserInterface/DA_InventorySlot_DragDropOperation.h"
 
-UDA_InventorySlotWidget::UDA_InventorySlotWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
-{
-	
-}
+#include "Inventory/UserInterface/DA_InventoryCellWidget.h"
 
 void UDA_InventorySlotWidget::SetData(const FDA_InventorySlot& NewData, UDA_InventoryGridWidget* NewParentWidget)
 {

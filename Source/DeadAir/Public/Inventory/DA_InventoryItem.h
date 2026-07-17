@@ -6,12 +6,12 @@
 #include "DA_InventoryComponent.h"
 #include "DA_InventoryItem.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnItemRotatedSignature); // TODO(DA): Remove rotation support
+DECLARE_MULTICAST_DELEGATE(FDA_OnItemRotatedSignature) // TODO(DA): Remove rotation support
 
 /**
  * 
  */
-UCLASS(Blueprintable, BlueprintType)
+UCLASS(Blueprintable, BlueprintType, PrioritizeCategories="Item")
 class DEADAIR_API UDA_InventoryItem : public UObject
 {
 	GENERATED_BODY()
@@ -19,7 +19,7 @@ class DEADAIR_API UDA_InventoryItem : public UObject
 public:
 	UDA_InventoryItem(const FObjectInitializer& ObjectInitializer);
 
-	/** Called when we create an instance of a UItem. @see InventoryComponent::CreateItem() */
+	/** Called when we create an instance of a UItem. @see UDA_InventoryComponent::CreateItem() */
 	void OnConstruct();
 
 	/** Stores the first cell coordinates (top-left cell of our item) where we stored this item in the grid. */
@@ -29,27 +29,20 @@ public:
 	/** How big is this item in columns and rows (X=Columns, Y=Rows). */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
 	FDA_Point2D Size;
-
+	
+	UFUNCTION(BlueprintPure, Category = "Item")
+	FORCEINLINE FDA_Point2D const& GetStartCoordinates() { return StartCoordinates; }
 
 	UFUNCTION(BlueprintPure, Category = "Item")
-	FORCEINLINE FDA_Point2D const& GetStartCoordinates()
-	{
-		return StartCoordinates;
-	}
-
-	UFUNCTION(BlueprintPure, Category = "Item")
-	FORCEINLINE TArray<FDA_Point2D> const& GetSizeInCells()
-	{
-		return SizeInCells;
-	}
+	FORCEINLINE TArray<FDA_Point2D> const& GetSizeInCells() { return SizeInCells; }
 
 	/**
-	 * Calculates how many cells are needed to store this item based on @Size.
+	 * Calculates how many cells are needed to store this item based on Size.
 	 * 
-	 * @return An array of cell(s) coordinates relative to @StartCoordinates.
+	 * @return An array of cell(s) coordinates relative to StartCoordinates.
 	 */
 	UFUNCTION(BlueprintPure, Category = "Item")
-	TArray<FDA_Point2D> CalcItemSize();
+	TArray<FDA_Point2D> CalculateItemSize();
 
 	/**
 	 * Checks whether we can rotate this item.
@@ -65,7 +58,7 @@ public:
 	void Rotate();
 
 	UFUNCTION(BlueprintPure, Category = "Item")
-	UDA_InventoryComponent* GetOwnerInventory()
+	UDA_InventoryComponent* GetOwnerInventory() const
 	{
 		return OwnerInventory;
 	}
@@ -78,7 +71,7 @@ public:
 	void HandleItemRotation();
 
 	/** Called whenever an item is rotated. */
-	FOnItemRotatedSignature OnItemRotated;
+	FDA_OnItemRotatedSignature OnItemRotated;
 
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
@@ -101,5 +94,5 @@ private:
 
 	/** Item's owning inventory component reference. */
 	UPROPERTY(Transient, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Item")
-	UDA_InventoryComponent* OwnerInventory;
+	UDA_InventoryComponent* OwnerInventory; // TODO(DA): Remove private access
 };

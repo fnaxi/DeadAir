@@ -2,15 +2,10 @@
 
 
 #include "Inventory/UserInterface/DA_InventoryGridWidget.h"
+
 #include "Inventory/UserInterface/DA_InventoryCellWidget.h"
 #include "Inventory/DA_InventoryComponent.h"
-#include "Components/CanvasPanelSlot.h"
-#include "Inventory/DA_InventoryItem.h"
 #include "Inventory/UserInterface/DA_InventorySlotWidget.h"
-
-UDA_InventoryGridWidget::UDA_InventoryGridWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
-{
-}
 
 void UDA_InventoryGridWidget::SetData(UDA_InventoryComponent* NewInventory)
 {

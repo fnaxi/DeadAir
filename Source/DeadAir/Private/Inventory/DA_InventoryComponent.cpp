@@ -5,13 +5,8 @@
 
 #include "Inventory/DA_InventoryItem.h"
 
+// Sets default values
 UDA_InventoryComponent::UDA_InventoryComponent()
-{
-	GridSize = FDA_Point2D(10, 10);
-	CellSize = 70.0f;
-}
-
-UDA_InventoryComponent::UDA_InventoryComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	GridSize = FDA_Point2D(10, 10);
 	CellSize = 70.0f;
@@ -58,9 +53,9 @@ bool UDA_InventoryComponent::IsFree(const FDA_Point2D& Coordinates)
 		return false;
 	}
 
-	for (const FDA_InventorySlot& Slot: Slots)
+	for (const FDA_InventorySlot& Slot : Slots)
 	{
-		for (const FDA_Point2D& Cell: Slot.Item->GetSizeInCells())
+		for (const FDA_Point2D& Cell : Slot.Item->GetSizeInCells())
 		{
 			if (Slot.Item->GetStartCoordinates().X + Cell.X == Coordinates.X &&
 				Slot.Item->GetStartCoordinates().Y + Cell.Y == Coordinates.Y)
@@ -76,7 +71,7 @@ bool UDA_InventoryComponent::IsFree(const FDA_Point2D& Coordinates)
 
 bool UDA_InventoryComponent::DoesItemFit(TArray<FDA_Point2D> const& SizeInCells, const FDA_Point2D& Coordinates)
 {
-	for (const FDA_Point2D& Cell: SizeInCells)
+	for (const FDA_Point2D& Cell : SizeInCells)
 	{																													
 		if (!IsFree(FDA_Point2D(Coordinates.X + Cell.X, Coordinates.Y + Cell.Y))) 
 		{
@@ -90,7 +85,7 @@ bool UDA_InventoryComponent::DoesItemFit(TArray<FDA_Point2D> const& SizeInCells,
 
 FDA_Point2D UDA_InventoryComponent::GetFreeCell()
 {
-	for (const FDA_Point2D& Coordinates: Cells)
+	for (const FDA_Point2D& Coordinates : Cells)
 	{
 		if (IsFree(Coordinates))
 		{
@@ -103,9 +98,9 @@ FDA_Point2D UDA_InventoryComponent::GetFreeCell()
 
 FDA_Point2D UDA_InventoryComponent::GetFreeCellThatFitsItem(TArray<FDA_Point2D> const& SizeInCells)
 {
-	for (const FDA_Point2D& Coordinates: Cells)
+	for (const FDA_Point2D& Coordinates : Cells)
 	{
-		if (IsFree(Coordinates))
+		if (IsFree(Coordinates)) // TODO(DA): Duplicates GetFreeCell()
 		{
 			if (DoesItemFit(SizeInCells, Coordinates))
 			{
@@ -160,6 +155,7 @@ bool UDA_InventoryComponent::AddItem(const TSubclassOf<UDA_InventoryItem> ItemCl
 
 bool UDA_InventoryComponent::RemoveItem(int32 UniqueId, int32 Quantity)
 {
+	// TODO(DA): Remove item
 	return true;
 }
 

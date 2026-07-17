@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Inventory/DA_InventoryComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "DA_InventoryGridWidget.generated.h"
 
+struct FDA_Point2D;
 class UDA_InventoryComponent;
 class UDA_InventoryCellWidget;
 class UDA_InventorySlotWidget;
@@ -19,10 +19,7 @@ class DEADAIR_API UDA_InventoryGridWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
-	UDA_InventoryGridWidget(const FObjectInitializer& ObjectInitializer);
-
-	
+public:	
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	void SetData(UDA_InventoryComponent* NewInventory);
 
@@ -43,15 +40,13 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Grid")
 	void OnInventoryUpdated();
-
-
+	
 	void NativeOnDataReceived();
 	void NativeOnInventoryUpdated();
 
 	/** Returns index of cell widget in cells widgets array from the specified cell coordinates. -1 if none found. */
 	int32 GetCellIndex(const FDA_Point2D& InCoordinates);
-
-
+	
 	UPROPERTY(BlueprintReadOnly, Category = "Grid")
 	UDA_InventoryComponent* Inventory;
 	

@@ -9,14 +9,23 @@
 #include "Inventory/UserInterface/DA_InventoryGridWidget.h"
 #include "Inventory/UserInterface/DA_InventorySlot_DragDropOperation.h"
 
-UDA_InventoryCellWidget::UDA_InventoryCellWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+void UDA_InventoryCellWidget::SetData(const FDA_Point2D& NewCoordinates, const float NewSize, UDA_InventoryGridWidget* NewParentWidget)
 {
+	Coordinates = NewCoordinates;
+	CellSize = NewSize;
+	ParentWidget = NewParentWidget;
+
+	OnDataReceived();
+	  
+    SetCellSize(NewSize);
+    SetCellColor(DefaultCellColor);
 }
 
 void UDA_InventoryCellWidget::NativeOnDragEnter(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	Super::NativeOnDragEnter(InGeometry, InDragDropEvent, InOperation);
 
+	// TODO(DA): duplicates UDA_InventoryCellWidget::NativeOnDrop
 	UDA_InventorySlot_DragDropOperation* Operation = Cast<UDA_InventorySlot_DragDropOperation>(InOperation);
 	check(Operation != nullptr);
 
@@ -76,7 +85,7 @@ void UDA_InventoryCellWidget::NativeOnDragLeave(const FDragDropEvent& InDragDrop
 	// reset all grid cells to their default color
 	for (UDA_InventoryCellWidget* Cell : ParentWidget->CellsWidgets)
 	{
-		Cell->SetCellColor(Cell->DefaultCellColor);
+		Cell->SetCellColor(Cell->DefaultCellColor); // TODO(DA): make ResetCellsToDefaultColor() method
 	}
 }
 
@@ -112,17 +121,5 @@ bool UDA_InventoryCellWidget::NativeOnDrop(const FGeometry& InGeometry, const FD
 	bDroppedSomething |= true;
 
 	return bDroppedSomething;
-}
-
-void UDA_InventoryCellWidget::SetData(const FDA_Point2D& NewCoordinates, const float NewSize, UDA_InventoryGridWidget* NewParentWidget)
-{
-	Coordinates = NewCoordinates;
-	CellSize = NewSize;
-	ParentWidget = NewParentWidget;
-
-	OnDataReceived();
-	  
-    SetCellSize(NewSize);
-    SetCellColor(DefaultCellColor);
 }
 

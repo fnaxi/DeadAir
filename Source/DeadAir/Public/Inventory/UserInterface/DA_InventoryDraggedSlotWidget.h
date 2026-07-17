@@ -4,21 +4,27 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Inventory/DA_InventoryComponent.h"
+#include "Inventory/DA_InventoryTypes.h"
 #include "DA_InventoryDraggedSlotWidget.generated.h"
 
 /**
  * 
  */
-UCLASS()
+UCLASS(PrioritizeCategories="DraggedSlot")
 class DEADAIR_API UDA_InventoryDraggedSlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
-	UDA_InventoryDraggedSlotWidget(const FObjectInitializer& ObjectInitializer);
+	UPROPERTY(BlueprintReadOnly, Category = "DraggedSlot")
+	FDA_InventorySlot SlotData;
 
+	UPROPERTY(BlueprintReadOnly, Category = "DraggedSlot")
+	float CellSize;
 
+	UPROPERTY(Transient, BlueprintReadOnly, Category = "DraggedSlot")
+	UDA_InventoryItem* CopyItem;
+	
 	UFUNCTION(BlueprintCallable, Category = "DraggedSlot")
 	void SetData(const FDA_InventorySlot NewData, float InCellSize);
 
@@ -30,14 +36,4 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "DraggedSlot")
 	void OnItemRotated();
-
-
-	UPROPERTY(BlueprintReadOnly, Category = "DraggedSlot")
-	FDA_InventorySlot SlotData;
-
-	UPROPERTY(BlueprintReadOnly, Category = "DraggedSlot")
-	float CellSize;
-
-	UPROPERTY(Transient, BlueprintReadOnly, Category = "DraggedSlot")
-	UDA_InventoryItem* CopyItem;
 };

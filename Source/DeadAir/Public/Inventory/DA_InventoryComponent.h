@@ -3,108 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DA_InventoryTypes.h"
 #include "Components/ActorComponent.h"
 #include "DA_InventoryComponent.generated.h"
 
-class UDA_InventoryItem;
-
-USTRUCT(BlueprintType)
-struct FDA_Point2D
-{
-	GENERATED_BODY()
-
-	FDA_Point2D()
-	{
-		X = 0;
-		Y = 0;
-	}
-
-	FDA_Point2D(const int32 InX, const int32 InY)
-	{
-		X = InX;
-		Y = InY;
-	}
-
-	FDA_Point2D(const FDA_Point2D& Other)
-	{
-		X = Other.X;
-		Y = Other.Y;
-	}
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = 0, UIMin = 0))
-	int32 X;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = 0, UIMin = 0))
-	int32 Y;
-
-	bool operator==(const FDA_Point2D& Other) const
-	{
-		return (X == Other.X && Y == Other.Y);
-	}
-
-	FDA_Point2D operator+(const FDA_Point2D& Other) const
-	{
-		return FDA_Point2D(X + Other.X, Y + Other.Y);
-	}
-
-	bool IsValid() const
-	{
-		return X >= 0 && Y >= 0; 
-	}
-};
-
-USTRUCT(BlueprintType)
-struct FDA_InventorySlot
-{
-	GENERATED_BODY()
-
-	FDA_InventorySlot()
-	{
-		Item = nullptr;
-		Quantity = 0;
-	}
-
-	FDA_InventorySlot(UDA_InventoryItem* InItem, const int32 InQuantity)
-	{
-		Item = InItem;
-		Quantity = InQuantity;
-	}
-
-	FDA_InventorySlot(const FDA_InventorySlot& Other)
-	{
-		Item = Other.Item;
-		Quantity = Other.Quantity;
-	}
-
-	UPROPERTY(BlueprintReadOnly)
-	UDA_InventoryItem* Item;
-
-	UPROPERTY(BlueprintReadOnly)
-	int32 Quantity;
-
-	bool operator==(const FDA_InventorySlot& Other) const
-	{
-		return Item == Other.Item && Quantity == Other.Quantity;
-	}
-};
-
-DECLARE_MULTICAST_DELEGATE(FOnInventoryUpdatedSignature);
-
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+/**
+ * 
+ */
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), PrioritizeCategories = "Inventory|Grid|Slot")
 class DEADAIR_API UDA_InventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
+	// Sets default values
 	UDA_InventoryComponent();
-	UDA_InventoryComponent(const FObjectInitializer& ObjectInitializer);
-
-	virtual void BeginPlay() override;
 
 	/** How big is this grid in columns and rows (X=Columns, Y=Rows). */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	FDA_Point2D GridSize;
 
+	/** Size of the cell in pixels. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 	float CellSize;
 
@@ -116,15 +35,15 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Grid")
 	TArray<FDA_InventorySlot> Slots;
 
-	/** Called when inventory changes (item added, removed, moved, etc..). */
+	/** Called when inventory changes (item added, removed, moved, etc.). */
 	FOnInventoryUpdatedSignature OnInventoryUpdated;
 
-
+	/** Initializes inventory cells basing on grid size. */
 	UFUNCTION(BlueprintCallable, Category = "Grid")
 	void Initialize();
 
 	/**
-	 * kChecks whether the specified coordinates are inside the grid.
+	 * Checks whether the specified coordinates are inside the grid.
 	 *
 	 * @param	Coordinates		Grid cell coordinates.
 	 *
@@ -207,6 +126,10 @@ public:
 	/** Notifies all listeners that the inventory has been updated. */
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void HandleInventoryUpdate();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
 private:
 	/**

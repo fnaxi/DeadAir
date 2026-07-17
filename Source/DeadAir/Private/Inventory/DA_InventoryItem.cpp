@@ -13,7 +13,7 @@ UDA_InventoryItem::UDA_InventoryItem(const FObjectInitializer& ObjectInitializer
 void UDA_InventoryItem::OnConstruct()
 {
 	SizeInCells.Empty();
-	SizeInCells = CalcItemSize();
+	SizeInCells = CalculateItemSize();
 
 	CachedSize = Size;
 	CachedSizeInCells = SizeInCells;
@@ -26,7 +26,7 @@ void UDA_InventoryItem::SetStartCoordinates(const FDA_Point2D& Coordinates)
 	StartCoordinates = Coordinates;
 }
 
-TArray<FDA_Point2D> UDA_InventoryItem::CalcItemSize()
+TArray<FDA_Point2D> UDA_InventoryItem::CalculateItemSize()
 {
 	TArray<FDA_Point2D> ItemSize;
 
@@ -71,7 +71,7 @@ void UDA_InventoryItem::Rotate()
 
 	SizeInCells.Empty();
 
-	for (const FDA_Point2D& Coordinates: CachedSizeInCells)
+	for (const FDA_Point2D& Coordinates : CachedSizeInCells)
 	{
 		FDA_Point2D InvertedCoordinates = FDA_Point2D(Coordinates.Y, Coordinates.X);
 		SizeInCells.Add(InvertedCoordinates);	

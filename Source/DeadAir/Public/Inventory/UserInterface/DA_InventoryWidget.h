@@ -15,6 +15,6 @@ class DEADAIR_API UDA_InventoryWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	// TODO(DA): encapsulation
-	UPROPERTY(meta = (BindWidget)) TObjectPtr<class UDA_InventoryGridWidget> Grid;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UDA_InventoryGridWidget> Grid;
 };
