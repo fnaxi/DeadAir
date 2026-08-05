@@ -1,14 +1,14 @@
 // CopyRight © Dead Air Game. All Rights Reserved.
 
 
-#include "Inventory/UserInterface/DA_InventoryGridWidget.h"
+#include "UserInterface/Inventory/DA_InventoryGridWidget.h"
 
 #include "Components/GridPanel.h"
 #include "Components/GridSlot.h"
-#include "Inventory/UserInterface/DA_InventoryCellWidget.h"
+#include "UserInterface/Inventory/DA_InventoryCellWidget.h"
 #include "Inventory/DA_InventoryComponent.h"
 #include "Inventory/DA_InventoryItem.h"
-#include "Inventory/UserInterface/DA_InventorySlotWidget.h"
+#include "UserInterface/Inventory/DA_InventorySlotWidget.h"
 
 void UDA_InventoryGridWidget::SetData(UDA_InventoryComponent* NewInventory)
 {

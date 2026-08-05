@@ -1,7 +1,7 @@
 // CopyRight © Dead Air Game. All Rights Reserved.
 
 
-#include "Inventory/UserInterface/DA_InventorySlotWidget.h"
+#include "UserInterface/Inventory/DA_InventorySlotWidget.h"
 
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
@@ -9,9 +9,9 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/GridSlot.h"
 #include "Inventory/DA_InventoryItem.h"
-#include "Inventory/UserInterface/DA_InventoryDraggedSlotWidget.h"
-#include "Inventory/UserInterface/DA_InventoryGridWidget.h"
-#include "Inventory/UserInterface/DA_InventorySlot_DragDropOperation.h"
+#include "UserInterface/Inventory/DA_InventoryDraggedSlotWidget.h"
+#include "UserInterface/Inventory/DA_InventoryGridWidget.h"
+#include "UserInterface/Inventory/DA_InventorySlot_DragDropOperation.h"
 
 void UDA_InventorySlotWidget::SetData(const FDA_InventorySlot& NewData, UDA_InventoryGridWidget* NewParentWidget)
 {

@@ -1,7 +1,7 @@
 // CopyRight © Dead Air Game. All Rights Reserved.
 
 
-#include "Inventory/UserInterface/DA_InventoryDraggedSlotWidget.h"
+#include "UserInterface/Inventory/DA_InventoryDraggedSlotWidget.h"
 
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanel.h"

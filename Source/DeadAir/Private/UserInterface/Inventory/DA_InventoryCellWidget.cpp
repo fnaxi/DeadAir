@@ -1,7 +1,7 @@
 // CopyRight © Dead Air Game. All Rights Reserved.
 
 
-#include "Inventory/UserInterface/DA_InventoryCellWidget.h"
+#include "UserInterface/Inventory/DA_InventoryCellWidget.h"
 
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanel.h"
@@ -10,10 +10,10 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Inventory/DA_InventoryItem.h"
-#include "Inventory/UserInterface/DA_InventorySlotWidget.h"
-#include "Inventory/UserInterface/DA_InventoryDraggedSlotWidget.h"
-#include "Inventory/UserInterface/DA_InventoryGridWidget.h"
-#include "Inventory/UserInterface/DA_InventorySlot_DragDropOperation.h"
+#include "UserInterface/Inventory/DA_InventorySlotWidget.h"
+#include "UserInterface/Inventory/DA_InventoryDraggedSlotWidget.h"
+#include "UserInterface/Inventory/DA_InventoryGridWidget.h"
+#include "UserInterface/Inventory/DA_InventorySlot_DragDropOperation.h"
 
 void UDA_InventoryCellWidget::SetData(const FDA_Point2D& NewCoordinates, const float NewSize, UDA_InventoryGridWidget* NewParentWidget)
 {

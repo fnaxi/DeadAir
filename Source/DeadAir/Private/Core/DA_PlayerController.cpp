@@ -7,8 +7,8 @@
 #include "MiscUtils.h"
 #include "Core/DA_Character.h"
 #include "Inventory/DA_InventoryComponent.h"
-#include "Inventory/UserInterface/DA_InventoryWidget.h"
-#include "Inventory/UserInterface/DA_InventoryGridWidget.h"
+#include "UserInterface/Inventory/DA_InventoryWidget.h"
+#include "UserInterface/Inventory/DA_InventoryGridWidget.h"
 
 void ADA_PlayerController::BeginPlay()
 {
