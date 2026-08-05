@@ -12,45 +12,51 @@ class UDA_InventoryGridWidget;
 /**
  * 
  */
-UCLASS(PrioritizeCategories="Cell")
+UCLASS()
 class DEADAIR_API UDA_InventoryCellWidget : public UUserWidget
 {
 	GENERATED_BODY()
 		
-public:
+public:	
 	/** Current cell coordinates in the grid. */
-	UPROPERTY(BlueprintReadOnly, Category = "Cell")
+	UPROPERTY(BlueprintReadOnly)
 	FDA_Point2D Coordinates;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Cell")
+	UPROPERTY(BlueprintReadOnly)
 	float CellSize;	
 
-	UPROPERTY(BlueprintReadOnly, Category = "Cell")
+	UPROPERTY(BlueprintReadOnly)
 	UDA_InventoryGridWidget* ParentWidget;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Cell")
+	UPROPERTY(EditDefaultsOnly)
 	FSlateBrush DefaultCellColor;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Cell")
-	FSlateBrush ValidCellPlacementColor;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Cell")
-	FSlateBrush InvalidCellPlacementColor;
 	
-	UFUNCTION(BlueprintCallable, Category = "Cell")
 	void SetData(const FDA_Point2D& NewCoordinates, const float NewSize, UDA_InventoryGridWidget* NewParentWidget);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Cell")
-	void OnDataReceived();
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Cell")
 	void SetCellSize(float Size);
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Cell")
 	void SetCellColor(const FSlateBrush& Brush);
+
+protected:
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<class UTextBlock> CoordinatesText;
+
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<class UCanvasPanel> CellCanvas; // TODO(DA): replace with UVerticalBox
+	
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<class UImage> Background;
+
+	UPROPERTY(EditDefaultsOnly)
+	FSlateBrush ValidCellPlacementColor;
+
+	UPROPERTY(EditDefaultsOnly)
+	FSlateBrush InvalidCellPlacementColor;
 
 	virtual void NativeOnDragEnter(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual void NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
+	
+private:
+	void OnDataReceived();
 };

@@ -13,4 +13,8 @@ UCLASS()
 class DEADAIR_API UDA_InventorySlot_DragDropOperation : public UDragDropOperation
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UDA_InventorySlotWidget> SlotWidget; // TODO(DA): Use Payload instead
 };

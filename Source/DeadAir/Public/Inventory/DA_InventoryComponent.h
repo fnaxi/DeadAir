@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), PrioritizeCategories = "Inventory|Grid|Slot")
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DEADAIR_API UDA_InventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()

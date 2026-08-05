@@ -3,6 +3,12 @@
 
 #include "Inventory/UserInterface/DA_InventoryCellWidget.h"
 
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Components/GridSlot.h"
+#include "Components/Image.h"
+#include "Components/TextBlock.h"
 #include "Inventory/DA_InventoryItem.h"
 #include "Inventory/UserInterface/DA_InventorySlotWidget.h"
 #include "Inventory/UserInterface/DA_InventoryDraggedSlotWidget.h"
@@ -19,6 +25,27 @@ void UDA_InventoryCellWidget::SetData(const FDA_Point2D& NewCoordinates, const f
 	  
     SetCellSize(NewSize);
     SetCellColor(DefaultCellColor);
+}
+
+void UDA_InventoryCellWidget::SetCellSize(float Size)
+{
+	UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(CellCanvas);
+	if (CanvasSlot)
+	{
+		CanvasSlot->SetSize(FVector2D(Size));
+	}
+}
+
+void UDA_InventoryCellWidget::SetCellColor(const FSlateBrush& Brush)
+{
+	Background->SetBrush(Brush);
+}
+
+void UDA_InventoryCellWidget::OnDataReceived()
+{
+	// TODO(DA): add console var to disable debug coords
+	//CoordinatesText->SetText( FText::FromString(TEXT("")) );
+	CoordinatesText->SetText( FText::FromString(FString::Printf(TEXT("(%i, %i)"), Coordinates.X, Coordinates.Y)) );
 }
 
 void UDA_InventoryCellWidget::NativeOnDragEnter(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
@@ -102,8 +129,8 @@ void UDA_InventoryCellWidget::NativeOnDragCancelled(const FDragDropEvent& InDrag
 
 bool UDA_InventoryCellWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
-	bool bDroppedSomething = Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
-
+	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+	
 	// reset all grid cells to their default color
 	for (UDA_InventoryCellWidget* Cell : ParentWidget->CellsWidgets)
 	{
@@ -111,15 +138,35 @@ bool UDA_InventoryCellWidget::NativeOnDrop(const FGeometry& InGeometry, const FD
 	}
 
 	UDA_InventorySlot_DragDropOperation* Operation = Cast<UDA_InventorySlot_DragDropOperation>(InOperation);
-	check(Operation != nullptr);
+	check(Operation && Operation->SlotWidget && Operation->SlotWidget->ParentWidget)
 
-	UDA_InventoryDraggedSlotWidget* DraggedSlot = Cast<UDA_InventoryDraggedSlotWidget>(Operation->DefaultDragVisual);
-	check(DraggedSlot != nullptr);
+	UDA_InventoryDraggedSlotWidget* DraggedWidget = Cast<UDA_InventoryDraggedSlotWidget>(Operation->DefaultDragVisual);
+	check(DraggedWidget)
 
-	DraggedSlot->SlotData.Item->GetOwnerInventory()->MoveItem(DraggedSlot->SlotData, Coordinates);
+	UDA_InventoryItem* Item = DraggedWidget->SlotData.Item;
+	check(Item)
 
-	bDroppedSomething |= true;
+	UDA_InventoryComponent* Inventory = Item->GetOwnerInventory();
+	check(Inventory)
+	
+	Inventory->MoveItem(DraggedWidget->SlotData, Coordinates);
+	
+	for (UDA_InventorySlotWidget* SlotWidget : Operation->SlotWidget->ParentWidget->SlotsWidgets)
+	{
+		if (UGridSlot* GridSlot = UWidgetLayoutLibrary::SlotAsGridSlot(SlotWidget))
+		{
+			GridSlot->SetLayer(1);
+		}
+	}
 
-	return bDroppedSomething;
+	if (Inventory->DoesItemFit(Item->GetSizeInCells(), Coordinates))
+	{
+		Item->SetStartCoordinates(Coordinates);
+	}
+	
+	Inventory->Slots.Add(DraggedWidget->SlotData);
+	Inventory->HandleInventoryUpdate();
+	
+	return true;
 }
 

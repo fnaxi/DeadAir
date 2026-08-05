@@ -8,8 +8,9 @@ public class DeadAirEditorTarget : TargetRules
 	public DeadAirEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
+		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_6;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 
-		ExtraModuleNames.AddRange( new string[] { "DeadAir" } );
+		ExtraModuleNames.AddRange(["DeadAir"]);
 	}
 }

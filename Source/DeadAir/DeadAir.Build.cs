@@ -12,8 +12,11 @@ public class DeadAir : ModuleRules
 		[
 			"Core",
 			"CoreUObject",
+			
 			"Engine",
+			
 			"InputCore",
+			"EnhancedInput",
 			
 			"HeadMountedDisplay",
 			"UMG"

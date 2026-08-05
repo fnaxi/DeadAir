@@ -7,7 +7,7 @@
 class UDA_InventoryItem;
 
 USTRUCT(BlueprintType)
-struct FDA_Point2D // TODO(DA): FDA_InventoryCoordinate?
+struct FDA_Point2D // TODO(DA): FDA_InventoryCoordinate or FIntPoint?
 {
 	GENERATED_BODY()
 

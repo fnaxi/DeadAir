@@ -75,7 +75,7 @@ public:
 
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
-	int32 UniqueId;
+	int32 UniqueId; // TODO(DA): FGuid
 
 private:
 	/** First grid cell (Top-left corner of our item) coordinates where we found an empty space that can fit this item. */

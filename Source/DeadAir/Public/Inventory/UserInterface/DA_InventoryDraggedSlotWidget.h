@@ -10,30 +10,27 @@
 /**
  * 
  */
-UCLASS(PrioritizeCategories="DraggedSlot")
+UCLASS()
 class DEADAIR_API UDA_InventoryDraggedSlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly, Category = "DraggedSlot")
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<class UCanvasPanel> SlotCanvas;
+	
+	UPROPERTY(BlueprintReadOnly)
 	FDA_InventorySlot SlotData;
 
-	UPROPERTY(BlueprintReadOnly, Category = "DraggedSlot")
+	UPROPERTY(BlueprintReadOnly)
 	float CellSize;
 
-	UPROPERTY(Transient, BlueprintReadOnly, Category = "DraggedSlot")
+	UPROPERTY(Transient, BlueprintReadOnly)
 	UDA_InventoryItem* CopyItem;
 	
-	UFUNCTION(BlueprintCallable, Category = "DraggedSlot")
+	UFUNCTION(BlueprintCallable)
 	void SetData(const FDA_InventorySlot NewData, float InCellSize);
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "DraggedSlot")
-	void OnDataReceived();
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "DraggedSlot")
 	void SetSlotSize(float Size);
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "DraggedSlot")
 	void OnItemRotated();
 };

@@ -9,15 +9,18 @@
 /**
  * 
  */
-UCLASS(PrioritizeCategories = "DeadAir")
+UCLASS(PrioritizeCategories = "UserInterface|Input")
 class DEADAIR_API ADA_PlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category="DeadAir")
+	UPROPERTY(EditDefaultsOnly, Category = "UserInterface")
 	TSubclassOf<class UDA_InventoryWidget> InventoryWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<class UInputMappingContext> MappingContext;
+	
 	UFUNCTION(BlueprintPure)
 	class UDA_InventoryComponent* GetInventoryComponent() const;
 	

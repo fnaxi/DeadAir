@@ -19,46 +19,39 @@ class DEADAIR_API UDA_InventoryGridWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:	
-	UFUNCTION(BlueprintCallable, Category = "Grid")
-	void SetData(UDA_InventoryComponent* NewInventory);
+public:
+	UPROPERTY(BlueprintReadOnly)
+	TArray<UDA_InventoryCellWidget*> CellsWidgets; // TODO(DA): private?
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "Grid")
-	void OnDataReceived();
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Grid")
-	void OnPrePopulateData();
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Grid")
-	void OnCellCreated(UDA_InventoryCellWidget* Widget);
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Grid")
-	void OnSlotCreated(UDA_InventorySlotWidget* Widget);
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Grid")
-	void OnSlotRemoved(UDA_InventorySlotWidget* Widget);
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "Grid")
-	void OnInventoryUpdated();
+	UPROPERTY(BlueprintReadOnly)
+	TArray<UDA_InventorySlotWidget*> SlotsWidgets;
 	
-	void NativeOnDataReceived();
-	void NativeOnInventoryUpdated();
+	void SetData(UDA_InventoryComponent* NewInventory);
 
 	/** Returns index of cell widget in cells widgets array from the specified cell coordinates. -1 if none found. */
 	int32 GetCellIndex(const FDA_Point2D& InCoordinates);
 	
-	UPROPERTY(BlueprintReadOnly, Category = "Grid")
-	UDA_InventoryComponent* Inventory;
+protected:
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UGridPanel> Grid;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Grid")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UDA_InventoryCellWidget> CellWidgetClass;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Grid")
-	TArray<UDA_InventoryCellWidget*> CellsWidgets;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Grid")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UDA_InventorySlotWidget> SlotWidgetClass;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Grid")
-	TArray<UDA_InventorySlotWidget*> SlotsWidgets;
+	UPROPERTY(BlueprintReadOnly)
+	UDA_InventoryComponent* Inventory;
+
+private:
+	void OnDataReceived();
+	void OnPrePopulateData();
+
+	void OnCellCreated(UDA_InventoryCellWidget* Widget);
+	
+	void OnSlotCreated(UDA_InventorySlotWidget* Widget);
+	void OnSlotRemoved(UDA_InventorySlotWidget* Widget);
+	
+	void OnInventoryUpdated();
 };
