@@ -1,11 +1,6 @@
 @echo off
 
-net session >nul 2>&1
-if %errorLevel% neq 0 (
-	echo Please run this script as an Administrator!
-	pause
-	exit /b
-)
+
 
 cd /d "%~dp0"
 
@@ -39,6 +34,5 @@ if %errorLevel% == 0 (
 	echo Custom tonemapper was successfully applied to UE5.6!
 ) else (
 	echo Failed to copy the file! Check folder permissions.
+	pause
 )
-
-pause

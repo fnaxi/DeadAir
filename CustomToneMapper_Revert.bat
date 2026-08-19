@@ -1,12 +1,5 @@
 @echo off
 
-net session >nul 2>&1
-if %errorLevel% neq 0 (
-	echo Please run this script as an Administrator!
-	pause
-	exit /b
-)
-
 cd /d "%~dp0"
 
 set "REG_KEY=HKLM\SOFTWARE\EpicGames\Unreal Engine\5.6"
@@ -41,6 +34,5 @@ if %errorLevel% == 0 (
 	echo Original tonemapper was successfully restored in UE5.6!
 ) else (
 	echo Failed to copy the file! Check folder permissions.
+	pause
 )
-
-pause
