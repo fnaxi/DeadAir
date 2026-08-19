@@ -11,7 +11,7 @@ class UDA_InventoryComponent;
 /**
  * 
  */
-UCLASS(PrioritizeCategories = "UserInterface|Input")
+UCLASS()
 class DEADAIR_API ADA_PlayerController : public APlayerController
 {
 	GENERATED_BODY()
