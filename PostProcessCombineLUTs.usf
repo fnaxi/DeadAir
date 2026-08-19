@@ -30,7 +30,7 @@
 
 // TODO: Read this from project settings. For now, set it manually here:
 #ifndef CUSTOM_TONEMAP_MODE
-	#define CUSTOM_TONEMAP_MODE 1  // Change this to switch tonemappers
+	#define CUSTOM_TONEMAP_MODE 5 // Change this to switch tonemappers
 #endif
 
 // 0: No tonemap, 1: Default, 2: Experimental
@@ -341,8 +341,7 @@ float3 ACESFilmicAP1(float3 ColorAP1)
 
 float3 ApplyUE3Tonemap(float3 LinearColor)
 {
-	float4 ImageAdjustments2 = float4(0.15f, 1.15f, 1.0f, 1.0f);
-	float4 ImageAdjustments3 = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	float4 ImageAdjustments2 = float4(1.0f, 2.2f, 1.0f, 1.0f); // float4 ImageAdjustments2 = float4(0.15f, 1.15f, 1.0f, 1.0f);
 	
 	float A = ImageAdjustments2.x;
 	float B = ImageAdjustments2.y;
@@ -361,6 +360,9 @@ float3 ApplyUE3Tonemap(float3 LinearColor)
 	// outputs in 0..1 range (saturate())
 	// clamps negative colors to 0 (abs())
 	{
+		/*LinearColor = max(0.0f, LinearColor);
+		GammaColor = LinearColor / (LinearColor + A) * B;*/
+		
 		GammaColor = LinearColor / abs(LinearColor + A) * B;
 	}
 
@@ -396,6 +398,8 @@ float3 ApplyUE3Tonemap(float3 LinearColor)
 
 float3 CustomTonemapOperator(float3 LinearColor)
 {
+	// return ApplyUE3Tonemap(LinearColor);
+	
 	// ── Example: Uncharted 2 / Hable filmic curve ─────────────────────────────
 	// Reference: http://filmicworlds.com/blog/filmic-tonemapping-operators/
 	//
