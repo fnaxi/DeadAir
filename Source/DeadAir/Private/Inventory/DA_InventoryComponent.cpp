@@ -3,24 +3,23 @@
 
 #include "Inventory/DA_InventoryComponent.h"
 
+#include "MiscUtils.h"
 #include "Inventory/DA_InventoryItem.h"
+
+DEFINE_LOG_CATEGORY(X_Inventory)
 
 // Sets default values
 UDA_InventoryComponent::UDA_InventoryComponent()
 {
-	GridSize = FDA_Point2D(10, 10);
-	CellSize = 70.0f;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UDA_InventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// TODO(DA): Moved to ADA_InventoryGridWidget::SetData()
-	// Initialize();
 }
 
-bool UDA_InventoryComponent::IsWithinBoundaries(const FDA_Point2D& Coordinates)
+bool UDA_InventoryComponent::IsWithinBoundaries(const FIntPoint& Coordinates) const
 {
 	if (Coordinates.X >= 0 && Coordinates.Y >= 0 && Coordinates.X < GridSize.X && Coordinates.Y < GridSize.Y)
 	{
@@ -31,36 +30,40 @@ bool UDA_InventoryComponent::IsWithinBoundaries(const FDA_Point2D& Coordinates)
 }
 
 void UDA_InventoryComponent::Initialize()
-{                                                                      
+{
+	Slots.Empty();
 	Cells.Empty();
 
 	for (int32 X = 0; X < GridSize.X; X++)
 	{
 		for (int32 Y = 0; Y < GridSize.Y; Y++)
 		{
-			Cells.Add(FDA_Point2D(X, Y));
+			Cells.Add(FIntPoint(X, Y));
 		}
 	}
 
-	Slots.Empty();
+	OnInventoryInitialized.Broadcast();
+	UE_LOG(X_Inventory, Log, TEXT("%s: Initialized inventory"), *GetOwner()->GetName())
 }
 
-bool UDA_InventoryComponent::IsFree(const FDA_Point2D& Coordinates)
+bool UDA_InventoryComponent::IsFree(const FIntPoint& Coordinates, const UDA_InventoryItem* ItemToIgnore)
 {
 	if (!IsWithinBoundaries(Coordinates))
 	{
-		// the cell at these coordinates is outside the grid.
+		// The cell at these coordinates is outside the grid
 		return false;
 	}
 
-	for (const FDA_InventorySlot& Slot : Slots)
+	for (const FDA_InventorySlot& Slot : GetSlots())
 	{
-		for (const FDA_Point2D& Cell : Slot.Item->GetSizeInCells())
+		if (ItemToIgnore && Slot.Item == ItemToIgnore) continue;
+		
+		for (const FIntPoint& Cell : Slot.Item->GetSizeInCells())
 		{
 			if (Slot.Item->GetStartCoordinates().X + Cell.X == Coordinates.X &&
 				Slot.Item->GetStartCoordinates().Y + Cell.Y == Coordinates.Y)
 			{
-				// the cell at these coordinates is not empty.
+				// The cell at these coordinates is not empty.
 				return false;
 			}
 		}
@@ -69,11 +72,12 @@ bool UDA_InventoryComponent::IsFree(const FDA_Point2D& Coordinates)
 	return true;
 }
 
-bool UDA_InventoryComponent::DoesItemFit(TArray<FDA_Point2D> const& SizeInCells, const FDA_Point2D& Coordinates)
+bool UDA_InventoryComponent::DoesItemFit(TArray<FIntPoint> const& SizeInCells, const FIntPoint& Coordinates, const UDA_InventoryItem* ItemToIgnore)
 {
-	for (const FDA_Point2D& Cell : SizeInCells)
-	{																													
-		if (!IsFree(FDA_Point2D(Coordinates.X + Cell.X, Coordinates.Y + Cell.Y))) 
+	for (const FIntPoint& Cell : SizeInCells)
+	{
+		const FIntPoint TargetCell = Coordinates + Cell;
+		if (!IsFree(TargetCell, ItemToIgnore)) 
 		{
 			// Item does not fit because the cell at these coordinates is occupied.
 			return false;
@@ -83,24 +87,24 @@ bool UDA_InventoryComponent::DoesItemFit(TArray<FDA_Point2D> const& SizeInCells,
 	return true;
 }
 
-FDA_Point2D UDA_InventoryComponent::GetFreeCell()
+FIntPoint UDA_InventoryComponent::GetFreeCell()
 {
-	for (const FDA_Point2D& Coordinates : Cells)
+	for (const FIntPoint& Coordinates : Cells)
 	{
-		if (IsFree(Coordinates))
+		if (IsFree(Coordinates)) // todo: Replace with predicate
 		{
 			return Coordinates;
 		}
 	}
 
-	return FDA_Point2D(-1, -1);
+	return FIntPoint(-1, -1);
 }
 
-FDA_Point2D UDA_InventoryComponent::GetFreeCellThatFitsItem(TArray<FDA_Point2D> const& SizeInCells)
+FIntPoint UDA_InventoryComponent::GetFreeCellThatFitsItem(TArray<FIntPoint> const& SizeInCells)
 {
-	for (const FDA_Point2D& Coordinates : Cells)
+	for (const FIntPoint& Coordinates : Cells)
 	{
-		if (IsFree(Coordinates)) // TODO(DA): Duplicates GetFreeCell()
+		if (IsFree(Coordinates))
 		{
 			if (DoesItemFit(SizeInCells, Coordinates))
 			{
@@ -109,85 +113,97 @@ FDA_Point2D UDA_InventoryComponent::GetFreeCellThatFitsItem(TArray<FDA_Point2D> 
 		}
 	}
 
-	return FDA_Point2D(-1, -1);
+	return FIntPoint(-1, -1);
 }
 
-bool UDA_InventoryComponent::AddItem(const TSubclassOf<UDA_InventoryItem> ItemClass, const int32 Quantity)
+bool UDA_InventoryComponent::AddItem(const FDA_InventorySlot& Slot)
 {
-	UDA_InventoryItem* ItemInstance = CreateItem(ItemClass);
-	const FDA_Point2D Coordinates = GetFreeCellThatFitsItem(ItemInstance->GetSizeInCells());
+	Slots.Add(Slot);
+	UE_LOG(X_Inventory, Verbose, TEXT("%s: Added %i item(s) of type %s"), *GetOwner()->GetName(), Slot.Quantity, *Slot.Item->GetName())
+	
+	HandleInventoryUpdate();
+	
+	return true;
+}
 
-	if (Coordinates.IsValid())
+bool UDA_InventoryComponent::AddNewItem(const TSubclassOf<UDA_InventoryItem> ItemClass, const int32 Quantity)
+{
+	UDA_InventoryItem* Item = CreateItem(ItemClass);
+	
+	const FIntPoint Coordinates = GetFreeCellThatFitsItem(Item->GetSizeInCells());
+	if (AreCoordinatesValid(Coordinates))
 	{
-		ItemInstance->SetStartCoordinates(Coordinates);
+		Item->SetStartCoordinates(Coordinates);
 
-		const FDA_InventorySlot Data = FDA_InventorySlot(ItemInstance, Quantity);
-		Slots.Add(Data);
-
-		HandleInventoryUpdate();
-
-		return true;
-	}
-
-	if (ItemInstance->CanRotate())
-	{
-		ItemInstance->Rotate();
-
-		const FDA_Point2D RotatedCoordinates = GetFreeCellThatFitsItem(ItemInstance->GetSizeInCells());
-
-		if (RotatedCoordinates.IsValid())
-		{
-			ItemInstance->SetStartCoordinates(RotatedCoordinates);
-
-			const FDA_InventorySlot Data = FDA_InventorySlot(ItemInstance, Quantity);
-			Slots.Add(Data);
-
-			HandleInventoryUpdate();
-
-			return true;
-		}
-
-		return false;
+		const FDA_InventorySlot Data = FDA_InventorySlot(Item, Quantity);
+		return AddItem(Data);
 	}
 
 	return false;
 }
 
-bool UDA_InventoryComponent::RemoveItem(int32 UniqueId, int32 Quantity)
+bool UDA_InventoryComponent::RemoveItem(const FDA_InventorySlot& Slot)
 {
-	// TODO(DA): Remove item
+	Slots.Remove(Slot);
+	UE_LOG(X_Inventory, Verbose, TEXT("%s: Removed %s item"), *GetOwner()->GetName(), *Slot.Item->GetName())
+	
 	return true;
 }
 
-void UDA_InventoryComponent::MoveItem(const FDA_InventorySlot& Slot, const FDA_Point2D& Destination)
-{
-	for (const FDA_InventorySlot& Element : Slots)
+bool UDA_InventoryComponent::MoveItem(const FDA_InventorySlot& InSlot, const FIntPoint& Destination)
+{	
+	for (const FDA_InventorySlot& Slot : Slots)
 	{
-		if (Element == Slot)
+		if (Slot != InSlot) continue;
+		
+		if (DoesItemFit(Slot.Item->GetSizeInCells(), Destination, Slot.Item))
 		{
-			if (DoesItemFit(Element.Item->GetSizeInCells(), Destination))
-			{
-				Element.Item->SetStartCoordinates(Destination);
-				HandleInventoryUpdate();
-				return;
-			}
+			Slot.Item->SetStartCoordinates(Destination);
+			UE_LOG(X_Inventory, Log, TEXT("%s: Moved %s item to %s coordinates"), *GetOwner()->GetName(), *Slot.Item.GetName(), *Destination.ToString())
+				
+			HandleInventoryUpdate();
+			return true;
 		}
 	}
+
+	UE_LOG(X_Inventory, Warning, TEXT("%s: Item %s can't be moved to %s coordinates!"), *GetOwner()->GetName(), *InSlot.Item.GetName(), *Destination.ToString())
+	return false;
 }
 
-UDA_InventoryItem* UDA_InventoryComponent::CreateItem(const TSubclassOf<UDA_InventoryItem> ItemClass)
+UDA_InventoryItem* UDA_InventoryComponent::CreateItem(const TSubclassOf<UDA_InventoryItem>& ItemClass)
 {
-	UDA_InventoryItem* ItemInstance = NewObject<UDA_InventoryItem>(GetOwner(), ItemClass);
-	check(ItemInstance != nullptr);
-
-	ItemInstance->OnConstruct();
-	ItemInstance->SetOwningInventory(this);
-
-	return ItemInstance;
+	if (!ensure(ItemClass)) return nullptr;
+	
+	UDA_InventoryItem* Item = NewObject<UDA_InventoryItem>(GetOwner(), ItemClass);
+	if (Item != nullptr)
+	{
+		Item->OnConstruct();
+		Item->SetOwningInventory(this);
+	}
+	
+	return Item;
 }
 
 void UDA_InventoryComponent::HandleInventoryUpdate()
 {
 	OnInventoryUpdated.Broadcast();
+	UE_LOG(X_Inventory, Verbose, TEXT("%s: Inventory was updated"), *GetOwner()->GetName())
+}
+
+void UDA_InventoryComponent::PrintInventoryContent()
+{
+	UE_LOG(X_Inventory, Log, TEXT("%s: Inventory content:"), *GetOwner()->GetName())
+
+	for (FDA_InventorySlot Slot : Slots)
+	{
+		UE_LOG(X_Inventory, Log, TEXT("%s: %s (Size: %s) (Coordinates: %s)"),
+			*GetOwner()->GetName(), *Slot.Item.GetName(), *Slot.Item.Get()->Size.ToString(), *Slot.Item.Get()->GetStartCoordinates().ToString())
+		
+		DEBUG_MESSAGE(10.f, FColor::Green,
+			FString::Printf(TEXT("%s (Size: %s) (Coordinates: %s)"),
+			*Slot.Item.GetName(), *Slot.Item.Get()->Size.ToString(), *Slot.Item.Get()->GetStartCoordinates().ToString()))
+	}
+	
+	DEBUG_MESSAGE( 10.f, FColor::Green, FString::Printf(TEXT("%s: Inventory content:"), *GetOwner()->GetName()) )
 }
 

@@ -15,6 +15,9 @@ class DEADAIR_API UDA_InventorySlot_DragDropOperation : public UDragDropOperatio
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UDA_InventorySlotWidget> SlotWidget; // TODO(DA): Use Payload instead
+	// Sets default values
+	UDA_InventorySlot_DragDropOperation()
+	{
+		Pivot = EDragPivot::MouseDown;
+	}
 };

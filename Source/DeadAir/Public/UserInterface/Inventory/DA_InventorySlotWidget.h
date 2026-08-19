@@ -18,34 +18,29 @@ class DEADAIR_API UDA_InventorySlotWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class UDA_InventoryDraggedSlotWidget> DraggedSlotWidgetClass;
-	
-	UPROPERTY(Transient, BlueprintReadOnly)
-	FDA_InventorySlot SlotData;
+	UPROPERTY()
+	TWeakObjectPtr<UDA_InventoryGridWidget> Grid;
 
-	UPROPERTY(Transient, BlueprintReadOnly)
-	UDA_InventoryGridWidget* ParentWidget;
+	void SetData(const FDA_InventorySlot& InSlotData, UDA_InventoryGridWidget* InGrid, const float InSize);
 
-	UFUNCTION(BlueprintCallable)
-	void SetData(const FDA_InventorySlot& NewData, UDA_InventoryGridWidget* NewParentWidget);
-
-	UFUNCTION(BlueprintCallable)
-	void SetSlotSize(float Size);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void SetSlotColor(const FSlateBrush& Brush);
+	FORCEINLINE	FDA_InventorySlot GetSlotData() const { return SlotData; }
 
 protected:
 	UPROPERTY(meta=(BindWidget))
-	TObjectPtr<class UCanvasPanel> SlotCanvas;
+	TObjectPtr<class USizeBox> Box;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UDA_InventoryDraggedSlotWidget> DraggedSlotWidgetClass;
 	
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
-	virtual void NativeOnDragEnter(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
-	virtual void NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
+private:
+	FDA_InventorySlot SlotData;
 	
+	void DropItem() const;
+	void SetSlotSize(float Size) const;
 };

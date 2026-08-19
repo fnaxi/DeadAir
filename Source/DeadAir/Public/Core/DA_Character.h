@@ -17,10 +17,9 @@ class DEADAIR_API ADA_Character : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ADA_Character();
-
+	
 protected:
-	// TODO(DA:) make BlueprintReadOnly or none at all
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Components")
+	UPROPERTY(VisibleAnywhere, Category="Components")
 	TObjectPtr<class UDA_InventoryComponent> InventoryComponent;
 
 	// Called when the game starts or when spawned

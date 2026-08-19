@@ -7,8 +7,18 @@
 #include "MiscUtils.h"
 #include "Core/DA_Character.h"
 #include "Inventory/DA_InventoryComponent.h"
+#include "Inventory/DA_InventoryItem.h"
 #include "UserInterface/Inventory/DA_InventoryWidget.h"
-#include "UserInterface/Inventory/DA_InventoryGridWidget.h"
+
+DEFINE_LOG_CATEGORY_STATIC(X_PlayerController, Log, All)
+
+void ADA_PlayerController::XPrintInventory()
+{
+	if (ensure(InventoryComponent != nullptr))
+	{
+		InventoryComponent->PrintInventoryContent();
+	}
+}
 
 void ADA_PlayerController::BeginPlay()
 {
@@ -19,30 +29,26 @@ void ADA_PlayerController::BeginPlay()
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 		{
+			ENSURE_KISMET(MappingContext)
 			Subsystem->AddMappingContext(MappingContext, 0);
 		}
 	}
 	
-	// Initialize inventory system
-	DA_ENSURE_ASSET(InventoryWidgetClass)
+	// Create inventory widget
 	{
+		ENSURE_KISMET(InventoryWidgetClass)
+		
 		InventoryWidget = CreateWidget<UDA_InventoryWidget>(this, InventoryWidgetClass);
 		if (InventoryWidget)
 		{
-			InventoryWidget->AddToViewport();
-			SetUIMode(true);
+			InventoryComponent = GetPawn<ADA_Character>()->GetComponentByClass<UDA_InventoryComponent>();
 			
-			if (InventoryWidget->Grid)
-			{
-				InventoryWidget->Grid->SetData(GetInventoryComponent()); // TODO(DA): SetOwningInventory()???
-			}
+			InventoryWidget->SetInventory(InventoryComponent.Get());
+			InventoryWidget->AddToViewport();
+			
+			SetUIMode(true);
 		}
 	}
-}
-
-UDA_InventoryComponent* ADA_PlayerController::GetInventoryComponent() const
-{
-	return GetPawn<ADA_Character>()->GetComponentByClass<UDA_InventoryComponent>();
 }
 
 void ADA_PlayerController::SetUIMode(bool bUIMode)
@@ -50,16 +56,17 @@ void ADA_PlayerController::SetUIMode(bool bUIMode)
 	bShowMouseCursor = bUIMode;
 
 	ResetIgnoreLookInput();
-	SetIgnoreLookInput(bUIMode);
-	SetIgnoreMoveInput(bUIMode);
+	ResetIgnoreMoveInput();
 
 	if (bUIMode)
 	{
 		SetInputMode(FInputModeGameAndUI());
+		UE_LOG(X_PlayerController, Log, TEXT("Input mode set to GameAndUI"))
 	}
 	else
 	{
-		SetInputMode(FInputModeGameOnly());	
+		SetInputMode(FInputModeGameOnly());
+		UE_LOG(X_PlayerController, Log, TEXT("Input mode set to GameOnly"))
 	}
 }
 

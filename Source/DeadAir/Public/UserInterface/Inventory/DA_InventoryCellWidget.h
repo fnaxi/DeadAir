@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Inventory/DA_InventoryTypes.h"
 #include "DA_InventoryCellWidget.generated.h"
 
 class UDA_InventoryGridWidget;
@@ -12,39 +11,34 @@ class UDA_InventoryGridWidget;
 /**
  * 
  */
-UCLASS()
+UCLASS(Config = Game)
 class DEADAIR_API UDA_InventoryCellWidget : public UUserWidget
 {
 	GENERATED_BODY()
 		
-public:	
-	/** Current cell coordinates in the grid. */
-	UPROPERTY(BlueprintReadOnly)
-	FDA_Point2D Coordinates;
+public:
+	UPROPERTY(Config)
+	bool bUseDebugCoordinates;
 
-	UPROPERTY(BlueprintReadOnly)
-	float CellSize;	
-
-	UPROPERTY(BlueprintReadOnly)
-	UDA_InventoryGridWidget* ParentWidget;
-
-	UPROPERTY(EditDefaultsOnly)
-	FSlateBrush DefaultCellColor;
+	void SetData(const FIntPoint& InCoordinates, UDA_InventoryGridWidget* InParentWidget, const float InSize);
 	
-	void SetData(const FDA_Point2D& NewCoordinates, const float NewSize, UDA_InventoryGridWidget* NewParentWidget);
-
-	void SetCellSize(float Size);
-	void SetCellColor(const FSlateBrush& Brush);
-
+	void SetCellColor(const FSlateBrush& Brush) const;
+	
+	FORCEINLINE FSlateBrush GetDefaultCellColor() const { return DefaultCellColor; }
+	FORCEINLINE FIntPoint GetCoordinates() const { return Coordinates; }
+	
 protected:
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<class UTextBlock> CoordinatesText;
 
 	UPROPERTY(meta=(BindWidget))
-	TObjectPtr<class UCanvasPanel> CellCanvas; // TODO(DA): replace with UVerticalBox
+	TObjectPtr<class USizeBox> Box;
 	
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<class UImage> Background;
+
+	UPROPERTY(EditDefaultsOnly)
+	FSlateBrush DefaultCellColor;
 
 	UPROPERTY(EditDefaultsOnly)
 	FSlateBrush ValidCellPlacementColor;
@@ -56,7 +50,13 @@ protected:
 	virtual void NativeOnDragLeave(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
-	
+
 private:
-	void OnDataReceived();
+	UPROPERTY()
+	TWeakObjectPtr<UDA_InventoryGridWidget> Grid;
+
+	/** Current cell coordinates in the grid. */
+	FIntPoint Coordinates;
+
+	void SetCellSize(float Size) const;
 };

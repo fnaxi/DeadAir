@@ -16,21 +16,21 @@ class DEADAIR_API UDA_InventoryDraggedSlotWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(BlueprintReadOnly)
+	FDA_InventorySlot SlotData; // todo: Make private
+
+	/*UPROPERTY()
+	TWeakObjectPtr<UDA_InventoryItem> CopyItem;*/
+	
+	void SetData(const FDA_InventorySlot& InData, float InCellSize);
+
+protected:
 	UPROPERTY(meta=(BindWidget))
-	TObjectPtr<class UCanvasPanel> SlotCanvas;
-	
-	UPROPERTY(BlueprintReadOnly)
-	FDA_InventorySlot SlotData;
+	TObjectPtr<class USizeBox> Box;
 
-	UPROPERTY(BlueprintReadOnly)
+private:
 	float CellSize;
-
-	UPROPERTY(Transient, BlueprintReadOnly)
-	UDA_InventoryItem* CopyItem;
 	
-	UFUNCTION(BlueprintCallable)
-	void SetData(const FDA_InventorySlot NewData, float InCellSize);
-
-	void SetSlotSize(float Size);
+	void SetSlotSize(float Size) const;
 	void OnItemRotated();
 };

@@ -6,32 +6,32 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Components/SizeBox.h"
 #include "Inventory/DA_InventoryComponent.h"
 #include "Inventory/DA_InventoryItem.h"
 
-void UDA_InventoryDraggedSlotWidget::SetData(const FDA_InventorySlot NewData, const float InCellSize)
+void UDA_InventoryDraggedSlotWidget::SetData(const FDA_InventorySlot& InData, const float InCellSize)
 {
 	// CopyItem = DuplicateObject(NewData.Item, NewData.Item->GetOuter());
 	// CopyItem->OnConstruct();
-	SlotData = NewData;
+	SlotData = InData;
 	CellSize = InCellSize;
 
 	SetSlotSize(CellSize);
 
-	if (!SlotData.Item->OnItemRotated.IsBoundToObject(this))
+	// todo: Fix crash here or remove. we don't need rotation anyway
+	/*if (!SlotData.Item->OnItemRotated.IsBoundToObject(this))
 	{
 		SlotData.Item->OnItemRotated.AddUObject(this, &ThisClass::OnItemRotated);
-	}
+	}*/
 }
 
-void UDA_InventoryDraggedSlotWidget::SetSlotSize(float Size)
+void UDA_InventoryDraggedSlotWidget::SetSlotSize(const float Size) const
 {
 	const FVector2D NewSize = FVector2D(SlotData.Item->Size.X * Size, SlotData.Item->Size.Y * Size);
 
-	if (UCanvasPanelSlot* Panel = UWidgetLayoutLibrary::SlotAsCanvasSlot(SlotCanvas))
-	{
-		Panel->SetSize(NewSize);
-	}
+	Box->SetWidthOverride(NewSize.X);
+	Box->SetHeightOverride(NewSize.Y);
 }
 
 void UDA_InventoryDraggedSlotWidget::OnItemRotated()
@@ -39,11 +39,11 @@ void UDA_InventoryDraggedSlotWidget::OnItemRotated()
 	if (SlotData.Item->CanRotate())
 	{
 		SlotData.Item->Rotate();
+
+		const FVector2D OldSize = FVector2D(Box->GetWidthOverride(), Box->GetHeightOverride());
 		
-		if (UCanvasPanelSlot* Panel = UWidgetLayoutLibrary::SlotAsCanvasSlot(SlotCanvas))
-		{
-			Panel->SetSize( FVector2D(Panel->GetSize().Y, Panel->GetSize().X) );
-		}
+		Box->SetWidthOverride(OldSize.Y);
+		Box->SetHeightOverride(OldSize.X);
 	}
 }
 

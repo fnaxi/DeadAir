@@ -4,10 +4,9 @@
 #include "UserInterface/Inventory/DA_InventoryCellWidget.h"
 
 #include "Blueprint/WidgetLayoutLibrary.h"
-#include "Components/CanvasPanel.h"
-#include "Components/CanvasPanelSlot.h"
 #include "Components/GridSlot.h"
 #include "Components/Image.h"
+#include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
 #include "Inventory/DA_InventoryItem.h"
 #include "UserInterface/Inventory/DA_InventorySlotWidget.h"
@@ -15,92 +14,62 @@
 #include "UserInterface/Inventory/DA_InventoryGridWidget.h"
 #include "UserInterface/Inventory/DA_InventorySlot_DragDropOperation.h"
 
-void UDA_InventoryCellWidget::SetData(const FDA_Point2D& NewCoordinates, const float NewSize, UDA_InventoryGridWidget* NewParentWidget)
+void UDA_InventoryCellWidget::SetData(const FIntPoint& InCoordinates, UDA_InventoryGridWidget* InParentWidget, const float InSize)
 {
-	Coordinates = NewCoordinates;
-	CellSize = NewSize;
-	ParentWidget = NewParentWidget;
+	Coordinates = InCoordinates;
+	Grid = InParentWidget;
+	check(Grid.IsValid());
 
-	OnDataReceived();
-	  
-    SetCellSize(NewSize);
+	CoordinatesText->SetText(FText::FromString(FString::Printf(TEXT("(%i;%i)"), Coordinates.X, Coordinates.Y)));
+	if (!bUseDebugCoordinates)
+	{
+		CoordinatesText->SetVisibility(ESlateVisibility::Hidden);
+	}
+	
+    SetCellSize(InSize);
     SetCellColor(DefaultCellColor);
 }
 
-void UDA_InventoryCellWidget::SetCellSize(float Size)
+void UDA_InventoryCellWidget::SetCellSize(float Size) const
 {
-	UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(CellCanvas);
-	if (CanvasSlot)
-	{
-		CanvasSlot->SetSize(FVector2D(Size));
-	}
+	Box->SetWidthOverride(Size);
+	Box->SetHeightOverride(Size);
 }
 
-void UDA_InventoryCellWidget::SetCellColor(const FSlateBrush& Brush)
+void UDA_InventoryCellWidget::SetCellColor(const FSlateBrush& Brush) const
 {
 	Background->SetBrush(Brush);
-}
-
-void UDA_InventoryCellWidget::OnDataReceived()
-{
-	// TODO(DA): add console var to disable debug coords
-	//CoordinatesText->SetText( FText::FromString(TEXT("")) );
-	CoordinatesText->SetText( FText::FromString(FString::Printf(TEXT("(%i, %i)"), Coordinates.X, Coordinates.Y)) );
 }
 
 void UDA_InventoryCellWidget::NativeOnDragEnter(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	Super::NativeOnDragEnter(InGeometry, InDragDropEvent, InOperation);
+	
+	if (!InOperation || !InOperation->IsA<UDA_InventorySlot_DragDropOperation>()) return;
 
-	// TODO(DA): duplicates UDA_InventoryCellWidget::NativeOnDrop
-	UDA_InventorySlot_DragDropOperation* Operation = Cast<UDA_InventorySlot_DragDropOperation>(InOperation);
-	check(Operation != nullptr);
-
-	UDA_InventoryDraggedSlotWidget* DraggedSlot = Cast<UDA_InventoryDraggedSlotWidget>(Operation->DefaultDragVisual);
+	Grid->ResetCellsToDefaultColor();
+	
+	const UDA_InventoryDraggedSlotWidget* DraggedSlot = Cast<UDA_InventoryDraggedSlotWidget>(InOperation->DefaultDragVisual);
 	check(DraggedSlot != nullptr);
 
-	// reset all grid cells to their default color
-	for (UDA_InventoryCellWidget* Cell : ParentWidget->CellsWidgets)
+	const UDA_InventoryItem* Item = DraggedSlot->SlotData.Item;
+	for (const FIntPoint& Element : Item->GetSizeInCells())
 	{
-		Cell->SetCellColor(Cell->DefaultCellColor);
-	}
+		FIntPoint TargetCell = Element + Coordinates;
+		const int32 Index = Grid->GetCellIndex(TargetCell);
 
-	TArray<FDA_Point2D> ItemSizeInCells = DraggedSlot->SlotData.Item->GetSizeInCells();
-
-	if (DraggedSlot->SlotData.Item->GetOwnerInventory()->DoesItemFit(ItemSizeInCells, Coordinates))
-	{
-		// Dragged item can be placed, set cells color to valid color ...
-		// (starting from current cell coordinates to `coordinates+item size` ...)
-		for (FDA_Point2D& Element : ItemSizeInCells)
+		if (Index >= 0 && Index < Grid->GetCellWidgets().Num()) // Only change cell color if its within grid boundaries
 		{
-			FDA_Point2D TargetCell = Element + Coordinates;
-			const int32 Index = ParentWidget->GetCellIndex(TargetCell);
-
-			if (Index >= 0 && Index < ParentWidget->CellsWidgets.Num())
+			if (Item->GetOwnerInventory()->DoesItemFit(Item->GetSizeInCells(), Coordinates, Item))
 			{
-				// Only change cell color if its within grid boundaries
-				ParentWidget->CellsWidgets[Index]->SetCellColor(ValidCellPlacementColor);
+				Grid->GetCellWidgets()[Index]->SetCellColor(ValidCellPlacementColor);
+				UE_LOG(X_Inventory, VeryVerbose, TEXT("Item fits in %s coordinates"), *Coordinates.ToString())
 			}
-
-			//UE_LOG(LogTemp, Warning, TEXT("Element (%d,%d). TargetCell (%d,%d). Index (%d)"), Element.X, Element.Y, TargetCell.X, TargetCell.Y, Index);
-		}
-	}
-	else
-	{
-		// Dragged item cannot be placed, set cells color to invalid color ...
-		// (starting from current cell coordinates to `coordinates+item size` ...)
-		for (FDA_Point2D& Element : ItemSizeInCells)
-		{
-			FDA_Point2D TargetCell = Element + Coordinates;
-			const int32 Index = ParentWidget->GetCellIndex(TargetCell);
-
-			if (Index >= 0 && Index < ParentWidget->CellsWidgets.Num())
+			else
 			{
-				// Only change cell color if its within grid boundaries
-				ParentWidget->CellsWidgets[Index]->SetCellColor(InvalidCellPlacementColor);
+				Grid->GetCellWidgets()[Index]->SetCellColor(InvalidCellPlacementColor);
+				UE_LOG(X_Inventory, VeryVerbose, TEXT("Item can't be fit in %s coordinates"), *Coordinates.ToString())
 			}
-
-			//UE_LOG(LogTemp, Warning, TEXT("Element (%d,%d). TargetCell (%d,%d). Index (%d)"), Element.X, Element.Y, TargetCell.X, TargetCell.Y, Index);
 		}
 	}
 }
@@ -109,63 +78,46 @@ void UDA_InventoryCellWidget::NativeOnDragLeave(const FDragDropEvent& InDragDrop
 {
 	Super::NativeOnDragLeave(InDragDropEvent, InOperation);
 
-	// reset all grid cells to their default color
-	for (UDA_InventoryCellWidget* Cell : ParentWidget->CellsWidgets)
-	{
-		Cell->SetCellColor(Cell->DefaultCellColor); // TODO(DA): make ResetCellsToDefaultColor() method
-	}
+	Grid->ResetCellsToDefaultColor();
 }
 
 void UDA_InventoryCellWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
 
-	// reset all grid cells to their default color
-	for (UDA_InventoryCellWidget* Cell : ParentWidget->CellsWidgets)
-	{
-		Cell->SetCellColor(Cell->DefaultCellColor);
-	}
+	Grid->ResetCellsToDefaultColor();
 }
 
 bool UDA_InventoryCellWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+
+	if (!InOperation || !InOperation->IsA<UDA_InventorySlot_DragDropOperation>()) return false;
+
+	const UDA_InventorySlotWidget* Payload = Cast<UDA_InventorySlotWidget>(InOperation->Payload);
+	check(Payload != nullptr);
+
+	Grid->ResetCellsToDefaultColor();
 	
-	// reset all grid cells to their default color
-	for (UDA_InventoryCellWidget* Cell : ParentWidget->CellsWidgets)
-	{
-		Cell->SetCellColor(Cell->DefaultCellColor);
-	}
-
-	UDA_InventorySlot_DragDropOperation* Operation = Cast<UDA_InventorySlot_DragDropOperation>(InOperation);
-	check(Operation && Operation->SlotWidget && Operation->SlotWidget->ParentWidget)
-
-	UDA_InventoryDraggedSlotWidget* DraggedWidget = Cast<UDA_InventoryDraggedSlotWidget>(Operation->DefaultDragVisual);
-	check(DraggedWidget)
-
-	UDA_InventoryItem* Item = DraggedWidget->SlotData.Item;
-	check(Item)
-
-	UDA_InventoryComponent* Inventory = Item->GetOwnerInventory();
-	check(Inventory)
-	
-	Inventory->MoveItem(DraggedWidget->SlotData, Coordinates);
-	
-	for (UDA_InventorySlotWidget* SlotWidget : Operation->SlotWidget->ParentWidget->SlotsWidgets)
+	// todo: Encapsulate
+	for (UDA_InventorySlotWidget* SlotWidget : Payload->Grid->GetSlotWidgets())
 	{
 		if (UGridSlot* GridSlot = UWidgetLayoutLibrary::SlotAsGridSlot(SlotWidget))
 		{
 			GridSlot->SetLayer(1);
 		}
 	}
-
-	if (Inventory->DoesItemFit(Item->GetSizeInCells(), Coordinates))
-	{
-		Item->SetStartCoordinates(Coordinates);
-	}
 	
-	Inventory->Slots.Add(DraggedWidget->SlotData);
-	Inventory->HandleInventoryUpdate();
+	const UDA_InventoryDraggedSlotWidget* DraggedWidget = Cast<UDA_InventoryDraggedSlotWidget>(InOperation->DefaultDragVisual);
+	check(DraggedWidget != nullptr);
+
+	const FDA_InventorySlot SlotData = DraggedWidget->SlotData;
+
+	UDA_InventoryComponent* Inventory = SlotData.Item->GetOwnerInventory();
+	if( ensure(Inventory) )
+	{
+		Inventory->MoveItem(DraggedWidget->SlotData, Coordinates);
+	}
 	
 	return true;
 }

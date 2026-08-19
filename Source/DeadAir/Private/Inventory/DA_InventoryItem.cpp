@@ -5,9 +5,9 @@
 
 UDA_InventoryItem::UDA_InventoryItem(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	Size = FDA_Point2D(1, 1);
+	Size = FIntPoint(1, 1);
 	bIsRotated = false;
-	UniqueId = 0;
+	// todo: ItemID = 0;
 }
 
 void UDA_InventoryItem::OnConstruct()
@@ -21,20 +21,20 @@ void UDA_InventoryItem::OnConstruct()
 	bIsRotated = false;
 }
 
-void UDA_InventoryItem::SetStartCoordinates(const FDA_Point2D& Coordinates)
+void UDA_InventoryItem::SetStartCoordinates(const FIntPoint& Coordinates)
 {
 	StartCoordinates = Coordinates;
 }
 
-TArray<FDA_Point2D> UDA_InventoryItem::CalculateItemSize()
+TArray<FIntPoint> UDA_InventoryItem::CalculateItemSize()
 {
-	TArray<FDA_Point2D> ItemSize;
+	TArray<FIntPoint> ItemSize;
 
 	for (int32 X = 0; X < Size.X; X++)
 	{
 		for (int32 Y = 0; Y < Size.Y; Y++)
 		{
-			ItemSize.Add(FDA_Point2D(X, Y));		
+			ItemSize.Add(FIntPoint(X, Y));		
 		}
 	}
 
@@ -71,13 +71,13 @@ void UDA_InventoryItem::Rotate()
 
 	SizeInCells.Empty();
 
-	for (const FDA_Point2D& Coordinates : CachedSizeInCells)
+	for (const FIntPoint& Coordinates : CachedSizeInCells)
 	{
-		FDA_Point2D InvertedCoordinates = FDA_Point2D(Coordinates.Y, Coordinates.X);
+		FIntPoint InvertedCoordinates = FIntPoint(Coordinates.Y, Coordinates.X);
 		SizeInCells.Add(InvertedCoordinates);	
 	}
 
-	const FDA_Point2D InvertedSize = FDA_Point2D(CachedSize.Y, CachedSize.X);
+	const FIntPoint InvertedSize = FIntPoint(CachedSize.Y, CachedSize.X);
 	Size = InvertedSize;
 
 	bIsRotated = true;
