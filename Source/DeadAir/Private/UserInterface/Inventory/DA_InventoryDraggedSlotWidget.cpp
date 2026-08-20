@@ -28,7 +28,7 @@ void UDA_InventoryDraggedSlotWidget::SetData(const FDA_InventorySlot& InData, co
 
 void UDA_InventoryDraggedSlotWidget::SetSlotSize(const float Size) const
 {
-	const FVector2D NewSize = FVector2D(SlotData.Item->Size.X * Size, SlotData.Item->Size.Y * Size);
+	const FVector2D NewSize = FVector2D(SlotData.Item->GetSize().X * Size, SlotData.Item->GetSize().Y * Size);
 
 	Box->SetWidthOverride(NewSize.X);
 	Box->SetHeightOverride(NewSize.Y);
@@ -36,7 +36,7 @@ void UDA_InventoryDraggedSlotWidget::SetSlotSize(const float Size) const
 
 void UDA_InventoryDraggedSlotWidget::OnItemRotated()
 {
-	if (SlotData.Item->CanRotate())
+	/*if (SlotData.Item->CanRotate())
 	{
 		SlotData.Item->Rotate();
 
@@ -44,6 +44,6 @@ void UDA_InventoryDraggedSlotWidget::OnItemRotated()
 		
 		Box->SetWidthOverride(OldSize.Y);
 		Box->SetHeightOverride(OldSize.X);
-	}
+	}*/
 }
 

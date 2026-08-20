@@ -3,22 +3,17 @@
 
 #include "Inventory/DA_InventoryItem.h"
 
-UDA_InventoryItem::UDA_InventoryItem(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+#include "Inventory/DA_InventoryItemDataAsset.h"
+
+void UDA_InventoryItem::SetOwningInventory(UDA_InventoryComponent* NewInventory)
 {
-	Size = FIntPoint(1, 1);
-	bIsRotated = false;
-	// todo: ItemID = 0;
+	OwnerInventory = NewInventory;
 }
 
-void UDA_InventoryItem::OnConstruct()
+void UDA_InventoryItem::SetDataAsset(UDA_InventoryItemDataAsset* InDataAsset)
 {
-	// SizeInCells.Empty();
-	// SizeInCells = GetItemSize();
-
-	// CachedSize = Size;
-	// CachedSizeInCells = SizeInCells;
-
-	bIsRotated = false;
+	ensure(InDataAsset);
+	DataAsset = InDataAsset;
 }
 
 void UDA_InventoryItem::SetStartCoordinates(const FIntPoint& Coordinates)
@@ -26,37 +21,32 @@ void UDA_InventoryItem::SetStartCoordinates(const FIntPoint& Coordinates)
 	StartCoordinates = Coordinates;
 }
 
-void UDA_InventoryItem::SetOwningInventory(UDA_InventoryComponent* NewInventory)
-{
-	OwnerInventory = NewInventory;
-}
-
 TArray<FIntPoint> UDA_InventoryItem::GetSizeInCells() const
 {
 	TArray<FIntPoint> ItemSize;
 
-	for (int32 X = 0; X < Size.X; X++)
+	for (int32 X = 0; X < GetSize().X; X++)
 	{
-		for (int32 Y = 0; Y < Size.Y; Y++)
+		for (int32 Y = 0; Y < GetSize().Y; Y++)
 		{
-			ItemSize.Add(FIntPoint(X, Y));		
+			ItemSize.Add(FIntPoint(X, Y));
 		}
 	}
 
 	return ItemSize;
 }
 
-bool UDA_InventoryItem::CanRotate()
+/*bool UDA_InventoryItem::CanRotate()
 {
 	// Only rotate rectangle-shaped items because they might fit in a specific space.
-	return Size.X != Size.Y;
+	return GetSize().X != GetSize().Y;
 
 	//return true; // Uncomment: If you want to be able to rotate any item.
-}
+}*/
 
-void UDA_InventoryItem::Rotate()
+/*void UDA_InventoryItem::Rotate()
 {
-	/*if (!CanRotate())
+	if (!CanRotate())
 	{
 		return;
 	}
@@ -88,16 +78,41 @@ void UDA_InventoryItem::Rotate()
 	bIsRotated = true;
 
 	HandleItemRotation();
-	//OwnerInventory->HandleInventoryUpdate();*/
-}
+	//OwnerInventory->HandleInventoryUpdate();
+}*/
 
-void UDA_InventoryItem::HandleItemRotation()
+/*void UDA_InventoryItem::HandleItemRotation()
 {
 	OnItemRotated.Broadcast();
-}
+}*/
 
 FIntPoint UDA_InventoryItem::GetCoordinatesFromHover(const FIntPoint& HoveredCoordinates) const
 {
-	return FIntPoint(HoveredCoordinates.X - ((Size.X - 1) / 2), HoveredCoordinates.Y - ((Size.Y - 1) / 2));
+	return FIntPoint(HoveredCoordinates.X - ((GetSize().X - 1) / 2), HoveredCoordinates.Y - ((GetSize().Y - 1) / 2));
+}
+
+FText UDA_InventoryItem::GetItemName() const
+{
+	return DataAsset ? DataAsset->Name : FText::FromString(TEXT("SID_InvalidItemName"));
+}
+
+FText UDA_InventoryItem::GetItemDescription() const
+{
+	return DataAsset ? DataAsset->Description : FText::FromString(TEXT("SID_InvalidItemDescription"));
+}
+
+FIntPoint UDA_InventoryItem::GetSize() const
+{
+	return DataAsset ? DataAsset->Size : FIntPoint(1);;
+}
+
+FIntPoint UDA_InventoryItem::GetAtlasCoordinates() const
+{
+	return DataAsset ? DataAsset->AtlasCoordinates : FIntPoint(1);
+}
+
+float UDA_InventoryItem::GetWeight() const
+{
+	return DataAsset ? DataAsset->Weight : 0.0f;
 }
 

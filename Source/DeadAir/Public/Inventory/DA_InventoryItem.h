@@ -17,25 +17,20 @@ class DEADAIR_API UDA_InventoryItem : public UObject
 	GENERATED_BODY()
 
 public:
-	UDA_InventoryItem(const FObjectInitializer& ObjectInitializer);
-
-	/** How big is this item in columns and rows (X=Columns, Y=Rows). */
-	UPROPERTY(EditDefaultsOnly)
-	FIntPoint Size;
+	UDA_InventoryItem(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
 	
 	/** Called whenever an item is rotated. */
 	FDA_OnItemRotatedSignature OnItemRotated;
 
 	UFUNCTION(BlueprintPure)
 	UDA_InventoryComponent* GetOwnerInventory() const { return OwnerInventory.Get(); }
-	
-	/** Called when a new instance of a UDA_InventoryItem is created. @see UDA_InventoryComponent::CreateItem() */
-	void OnConstruct();
-
-	/** Stores the first cell coordinates (top-left cell of our item) where we stored this item in the grid. */
-	void SetStartCoordinates(const FIntPoint& Coordinates);
 
 	void SetOwningInventory(UDA_InventoryComponent* NewInventory);
+
+	void SetDataAsset(UDA_InventoryItemDataAsset* InDataAsset);
+	
+	/** Stores the first cell coordinates (top-left cell of our item) where we stored this item in the grid. */
+	void SetStartCoordinates(const FIntPoint& Coordinates);
 
 	/**
 	 * Calculates how many cells are needed to store this item based on Size.
@@ -50,38 +45,38 @@ public:
 	 * 
 	 * @note Currently only rectangle-shaped items can be rotated.
 	 */
-	bool CanRotate();
+	// bool CanRotate();
 
 	/** Rotates the item (inverts Size and SizeInCells coordinates). Use cached values to undo this. */
-	void Rotate();
+	// void Rotate();
 
 	/** Notifies all listeners that the item has been rotated. */
-	void HandleItemRotation();
+	// void HandleItemRotation();
 
 	FIntPoint GetCoordinatesFromHover(const FIntPoint& HoveredCoordinates) const;
 	
 	FORCEINLINE const FIntPoint& GetStartCoordinates() const { return StartCoordinates; }
-	// FORCEINLINE const TArray<FIntPoint>& GetSizeInCells() const { return SizeInCells; }
-	
-	FORCEINLINE FGuid GetItemID() const { return ItemID; }
+	FORCEINLINE FGuid GetItemID() const { return UID; }
 
+	FText		GetItemName()			const;
+	FText		GetItemDescription()	const;
+	FIntPoint	GetSize()				const;
+	FIntPoint	GetAtlasCoordinates()	const;
+	float		GetWeight()				const;
+	
 private:
 	/** Item's owning inventory component reference. */
 	UPROPERTY()
 	TWeakObjectPtr<UDA_InventoryComponent> OwnerInventory;
+
+	UPROPERTY()
+	TObjectPtr<class UDA_InventoryItemDataAsset> DataAsset;
 	
 	/** First grid cell (top-left corner of the item) coordinates where an empty space that can fit this item was found. */
 	FIntPoint StartCoordinates;
 	
-	/** All grid cells coordinates used to store this item. */
-	// TArray<FIntPoint> SizeInCells; // todo: replace with GetSizeInCells() instead (single source of truth)
-	
-	FGuid ItemID = FGuid::NewGuid();
-	
-	/** These hold default data before rotating the item. */
-	// FIntPoint CachedSize;
-	// TArray<FIntPoint> CachedSizeInCells; // todo: Remove
-
 	/** Whether the item is currently rotated. */
-	uint8 bIsRotated : 1;
+	bool bIsRotated = false;
+	
+	FGuid UID = FGuid::NewGuid();
 };

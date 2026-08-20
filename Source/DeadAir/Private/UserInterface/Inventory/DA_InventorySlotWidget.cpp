@@ -25,7 +25,7 @@ void UDA_InventorySlotWidget::SetData(const FDA_InventorySlot& InSlotData, UDA_I
 
 void UDA_InventorySlotWidget::SetSlotSize(const float Size) const
 {
-	const FIntPoint ItemSize = SlotData.Item->Size;
+	const FIntPoint ItemSize = SlotData.Item->GetSize();
 	
 	Box->SetWidthOverride(ItemSize.X * Size);
 	Box->SetHeightOverride(ItemSize.Y * Size);
@@ -92,11 +92,6 @@ void UDA_InventorySlotWidget::DropItem() const
 		{
 			GridSlot->SetLayer(1);
 		}
-	}
-
-	if (UDA_InventoryComponent* Inventory = SlotData.Item->GetOwnerInventory())
-	{
-		Inventory->AddItem(SlotData);
 	}
 }
 

@@ -95,8 +95,8 @@ void UDA_InventoryGridWidget::OnSlotCreated(UDA_InventorySlotWidget* Widget)
 	{
 		if (UGridSlot* GridSlot = Grid->AddChildToGrid(Widget, Item->GetStartCoordinates().Y, Item->GetStartCoordinates().X))
 		{
-			GridSlot->SetColumnSpan(Item->Size.X);
-			GridSlot->SetRowSpan(Item->Size.Y);
+			GridSlot->SetColumnSpan(Item->GetSize().X);
+			GridSlot->SetRowSpan(Item->GetSize().Y);
 			GridSlot->SetLayer(1);
 		}
 	}

@@ -87,11 +87,12 @@ public:
 	 * Adds a new item instance to the inventory.
 	 *
 	 * @param	ItemClass		Item class we are trying to add/instantiate.
+	 * @param	DataAsset		Data asset of the item.
 	 * @param	Quantity		Quantity to add.
 	 * @return True, if the item is added to the inventory. False otherwise.
 	 */
 	UFUNCTION(BlueprintCallable)
-	bool AddNewItem(TSubclassOf<UDA_InventoryItem> ItemClass, int32 Quantity = 1);
+	bool AddNewItem(TSubclassOf<UDA_InventoryItem> ItemClass, class UDA_InventoryItemDataAsset* DataAsset, int32 Quantity = 1);
 	
 	/**
 	 * Removes an existing item instance from the inventory.
@@ -147,9 +148,10 @@ private:
 	 * Creates an item instance from the specified item class.
 	 *
 	 * @param	ItemClass		Item class to instantiate.
+	 * @param	DataAsset		Data asset of the item.
 	 * @return a UItem instance of the specified class. nullptr otherwise.
 	 */
-	UDA_InventoryItem* CreateItem(const TSubclassOf<UDA_InventoryItem>& ItemClass);
+	UDA_InventoryItem* CreateItem(const TSubclassOf<UDA_InventoryItem>& ItemClass, class UDA_InventoryItemDataAsset* DataAsset);
 };
 
 inline bool AreCoordinatesValid(const FIntPoint Point) { return Point.X >= 0 && Point.Y >= 0; }

@@ -126,9 +126,9 @@ bool UDA_InventoryComponent::AddItem(const FDA_InventorySlot& Slot)
 	return true;
 }
 
-bool UDA_InventoryComponent::AddNewItem(const TSubclassOf<UDA_InventoryItem> ItemClass, const int32 Quantity)
+bool UDA_InventoryComponent::AddNewItem(TSubclassOf<UDA_InventoryItem> ItemClass, UDA_InventoryItemDataAsset* DataAsset, int32 Quantity)
 {
-	UDA_InventoryItem* Item = CreateItem(ItemClass);
+	UDA_InventoryItem* Item = CreateItem(ItemClass, DataAsset);
 	
 	const FIntPoint Coordinates = GetFreeCellThatFitsItem(Item->GetSizeInCells());
 	if (AreCoordinatesValid(Coordinates))
@@ -169,16 +169,15 @@ bool UDA_InventoryComponent::MoveItem(const FDA_InventorySlot& InSlot, const FIn
 	UE_LOG(X_Inventory, Warning, TEXT("%s: Item %s can't be moved to %s coordinates!"), *GetOwner()->GetName(), *InSlot.Item.GetName(), *Destination.ToString())
 	return false;
 }
-
-UDA_InventoryItem* UDA_InventoryComponent::CreateItem(const TSubclassOf<UDA_InventoryItem>& ItemClass)
+UDA_InventoryItem* UDA_InventoryComponent::CreateItem(const TSubclassOf<UDA_InventoryItem>& ItemClass, UDA_InventoryItemDataAsset* DataAsset)
 {
 	if (!ensure(ItemClass)) return nullptr;
 	
 	UDA_InventoryItem* Item = NewObject<UDA_InventoryItem>(GetOwner(), ItemClass);
 	if (Item != nullptr)
 	{
-		Item->OnConstruct();
 		Item->SetOwningInventory(this);
+		Item->SetDataAsset(DataAsset);
 	}
 	
 	return Item;
@@ -197,11 +196,11 @@ void UDA_InventoryComponent::PrintInventoryContent()
 	for (FDA_InventorySlot Slot : Slots)
 	{
 		UE_LOG(X_Inventory, Log, TEXT("%s: %s (Size: %s) (Coordinates: %s)"),
-			*GetOwner()->GetName(), *Slot.Item.GetName(), *Slot.Item.Get()->Size.ToString(), *Slot.Item.Get()->GetStartCoordinates().ToString())
+			*GetOwner()->GetName(), *Slot.Item.GetName(), *Slot.Item.Get()->GetSize().ToString(), *Slot.Item.Get()->GetStartCoordinates().ToString())
 		
 		DEBUG_MESSAGE(10.f, FColor::Green,
 			FString::Printf(TEXT("%s (Size: %s) (Coordinates: %s)"),
-			*Slot.Item.GetName(), *Slot.Item.Get()->Size.ToString(), *Slot.Item.Get()->GetStartCoordinates().ToString()))
+			*Slot.Item.GetName(), *Slot.Item.Get()->GetSize().ToString(), *Slot.Item.Get()->GetStartCoordinates().ToString()))
 	}
 	
 	DEBUG_MESSAGE( 10.f, FColor::Green, FString::Printf(TEXT("%s: Inventory content:"), *GetOwner()->GetName()) )

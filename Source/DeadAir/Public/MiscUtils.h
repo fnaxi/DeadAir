@@ -12,3 +12,5 @@
 #define DEBUG_MESSAGE(TimeToDisplay, Color, Message, ...) \
 	if (GEngine) \
 	GEngine->AddOnScreenDebugMessage(-1, TimeToDisplay, Color, Message, ##__VA_ARGS__);
+
+#define DA_LOCTEXT(StringID) LOCTEXT(StringID, StringID)
