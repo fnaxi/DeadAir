@@ -19,7 +19,8 @@ public class DeadAir : ModuleRules
 			"EnhancedInput",
 			
 			"HeadMountedDisplay",
-			"UMG"
+			"UMG",
+			"CommonUI"
 		]);
 
 		PrivateDependencyModuleNames.AddRange(

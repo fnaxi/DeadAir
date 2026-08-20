@@ -8,11 +8,28 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/GridSlot.h"
 #include "Components/Image.h"
-#include "Components/SizeBox.h"
 #include "Inventory/DA_InventoryItem.h"
+#include "UserInterface/Inventory/DA_InventorySlotTooltip.h"
 #include "UserInterface/Inventory/DA_InventoryDraggedSlotWidget.h"
 #include "UserInterface/Inventory/DA_InventoryGridWidget.h"
 #include "UserInterface/Inventory/DA_InventorySlot_DragDropOperation.h"
+
+void UDA_InventorySlotWidget::SetData(const FDA_InventorySlot& InSlotData, const float InSize)
+{
+	Super::SetData(InSlotData, InSize);
+
+	ENSURE_KISMET(TooltipClass)
+	if (UDA_InventorySlotTooltip* Widget = CreateWidget<UDA_InventorySlotTooltip>(GetOwningPlayer(), TooltipClass))
+	{
+		Widget->SetData(SlotData);
+		SetToolTip(Widget);
+	}
+}
+
+void UDA_InventorySlotWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+}
 
 void UDA_InventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {

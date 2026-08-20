@@ -30,7 +30,7 @@
 
 // TODO: Read this from project settings. For now, set it manually here:
 #ifndef CUSTOM_TONEMAP_MODE
-	#define CUSTOM_TONEMAP_MODE 5 // Change this to switch tonemappers
+	#define CUSTOM_TONEMAP_MODE 3 // Change this to switch tonemappers
 #endif
 
 // 0: No tonemap, 1: Default, 2: Experimental
@@ -360,9 +360,6 @@ float3 ApplyUE3Tonemap(float3 LinearColor)
 	// outputs in 0..1 range (saturate())
 	// clamps negative colors to 0 (abs())
 	{
-		/*LinearColor = max(0.0f, LinearColor);
-		GammaColor = LinearColor / (LinearColor + A) * B;*/
-		
 		GammaColor = LinearColor / abs(LinearColor + A) * B;
 	}
 
