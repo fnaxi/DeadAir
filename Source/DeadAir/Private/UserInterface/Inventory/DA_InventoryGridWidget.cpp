@@ -18,34 +18,9 @@ void UDA_InventoryGridWidget::SetData(UDA_InventoryComponent* InInventory)
 	
 	Inventory->Initialize();
 	Inventory->OnInventoryUpdated.AddUObject(this, &ThisClass::OnInventoryUpdated);
-	
-	CellWidgets.Empty();
-	for (const FIntPoint& Coordinates : Inventory->GetCells())
-	{
-		ENSURE_KISMET(CellWidgetClass)
 
-		UDA_InventoryCellWidget* CellWidget = CreateWidget<UDA_InventoryCellWidget>(GetOwningPlayer(), CellWidgetClass);
-		check(CellWidget != nullptr);
-
-		CellWidgets.Add(CellWidget);
-		CellWidget->SetData(Coordinates, this, Inventory->GetCellSize());
-
-		OnCellCreated(CellWidget);
-	}
-	
-	SlotWidgets.Empty();
-	for (const FDA_InventorySlot& Data : Inventory->GetSlots())
-	{
-		ENSURE_KISMET(SlotWidgetClass)
-		
-		UDA_InventorySlotWidget* SlotWidget = CreateWidget<UDA_InventorySlotWidget>(GetOwningPlayer(), SlotWidgetClass);
-		check(SlotWidget != nullptr);
-
-		SlotWidgets.Add(SlotWidget);
-		SlotWidget->SetData(Data, this, Inventory->GetCellSize());
-
-		OnSlotCreated(SlotWidget);
-	}
+	CreateCells();
+	CreateSlots();
 }
 
 int32 UDA_InventoryGridWidget::GetCellIndex(const FIntPoint& InCoordinates)
@@ -116,19 +91,41 @@ void UDA_InventoryGridWidget::OnInventoryUpdated()
 		OnSlotRemoved(SlotWidget);
 	}
 
-	SlotWidgets.Empty();
+	CreateSlots();
+}
 
-	ENSURE_KISMET(SlotWidgetClass)
+void UDA_InventoryGridWidget::CreateCells()
+{
+	CellWidgets.Empty();
+	for (const FIntPoint& Coordinates : Inventory->GetCells())
+	{
+		ENSURE_KISMET(CellWidgetClass)
+
+		UDA_InventoryCellWidget* CellWidget = CreateWidget<UDA_InventoryCellWidget>(GetOwningPlayer(), CellWidgetClass);
+		check(CellWidget != nullptr);
+
+		CellWidgets.Add(CellWidget);
+		CellWidget->SetData(Coordinates, this, Inventory->GetCellSize());
+
+		OnCellCreated(CellWidget);
+	}
+}
+
+void UDA_InventoryGridWidget::CreateSlots()
+{
+	SlotWidgets.Empty();
 	for (const FDA_InventorySlot& Data : Inventory->GetSlots())
 	{
-		UDA_InventorySlotWidget* SlotWidget = CreateWidget<UDA_InventorySlotWidget>(GetOwningPlayer(), SlotWidgetClass);
-		if (SlotWidget != nullptr)
-		{
-			SlotWidgets.Add(SlotWidget);
-			SlotWidget->SetData(Data, this, Inventory->GetCellSize());
+		ENSURE_KISMET(SlotWidgetClass)
 		
-			OnSlotCreated(SlotWidget);
-		}
+		UDA_InventorySlotWidget* SlotWidget = CreateWidget<UDA_InventorySlotWidget>(GetOwningPlayer(), SlotWidgetClass);
+		check(SlotWidget != nullptr);
+
+		SlotWidgets.Add(SlotWidget);
+		SlotWidget->SetData(Data, Inventory->GetCellSize());
+		SlotWidget->Grid = this; // todo: Use parent widget instead
+		
+		OnSlotCreated(SlotWidget);
 	}
 }
 

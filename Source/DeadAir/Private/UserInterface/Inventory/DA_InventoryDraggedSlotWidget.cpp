@@ -10,29 +10,14 @@
 #include "Inventory/DA_InventoryComponent.h"
 #include "Inventory/DA_InventoryItem.h"
 
-void UDA_InventoryDraggedSlotWidget::SetData(const FDA_InventorySlot& InData, const float InCellSize)
+/*void UDA_InventoryDraggedSlotWidget::SetData(const FDA_InventorySlot& InData, const float InCellSize)
 {
-	// CopyItem = DuplicateObject(NewData.Item, NewData.Item->GetOuter());
-	// CopyItem->OnConstruct();
-	SlotData = InData;
-	CellSize = InCellSize;
-
-	SetSlotSize(CellSize);
-
 	// todo: Fix crash here or remove. we don't need rotation anyway
 	/*if (!SlotData.Item->OnItemRotated.IsBoundToObject(this))
 	{
 		SlotData.Item->OnItemRotated.AddUObject(this, &ThisClass::OnItemRotated);
-	}*/
-}
-
-void UDA_InventoryDraggedSlotWidget::SetSlotSize(const float Size) const
-{
-	const FVector2D NewSize = FVector2D(SlotData.Item->GetSize().X * Size, SlotData.Item->GetSize().Y * Size);
-
-	Box->SetWidthOverride(NewSize.X);
-	Box->SetHeightOverride(NewSize.Y);
-}
+	}#1#
+}*/
 
 void UDA_InventoryDraggedSlotWidget::OnItemRotated()
 {

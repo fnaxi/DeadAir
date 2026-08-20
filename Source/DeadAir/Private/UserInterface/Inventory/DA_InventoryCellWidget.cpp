@@ -52,7 +52,7 @@ void UDA_InventoryCellWidget::NativeOnDragEnter(const FGeometry& InGeometry, con
 	const UDA_InventoryDraggedSlotWidget* DraggedSlot = Cast<UDA_InventoryDraggedSlotWidget>(InOperation->DefaultDragVisual);
 	check(DraggedSlot != nullptr);
 
-	const UDA_InventoryItem* Item = DraggedSlot->SlotData.Item;
+	const UDA_InventoryItem* Item = DraggedSlot->GetSlotData().Item;
 	for (const FIntPoint& Element : Item->GetSizeInCells())
 	{
 		FIntPoint TargetCoordinates = Item->GetCoordinatesFromHover(Coordinates);
@@ -113,12 +113,12 @@ bool UDA_InventoryCellWidget::NativeOnDrop(const FGeometry& InGeometry, const FD
 	const UDA_InventoryDraggedSlotWidget* DraggedWidget = Cast<UDA_InventoryDraggedSlotWidget>(InOperation->DefaultDragVisual);
 	check(DraggedWidget != nullptr);
 
-	const FDA_InventorySlot SlotData = DraggedWidget->SlotData;
+	const FDA_InventorySlot SlotData = DraggedWidget->GetSlotData();
 
 	UDA_InventoryComponent* Inventory = SlotData.Item->GetOwnerInventory();
 	if (ensure(Inventory != nullptr))
 	{
-		Inventory->MoveItem(DraggedWidget->SlotData, SlotData.Item->GetCoordinatesFromHover(Coordinates));
+		Inventory->MoveItem(SlotData, SlotData.Item->GetCoordinatesFromHover(Coordinates));
 	}
 	
 	return true;

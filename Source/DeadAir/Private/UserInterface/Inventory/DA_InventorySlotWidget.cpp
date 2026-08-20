@@ -7,29 +7,12 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/GridSlot.h"
+#include "Components/Image.h"
 #include "Components/SizeBox.h"
 #include "Inventory/DA_InventoryItem.h"
 #include "UserInterface/Inventory/DA_InventoryDraggedSlotWidget.h"
 #include "UserInterface/Inventory/DA_InventoryGridWidget.h"
 #include "UserInterface/Inventory/DA_InventorySlot_DragDropOperation.h"
-
-void UDA_InventorySlotWidget::SetData(const FDA_InventorySlot& InSlotData, UDA_InventoryGridWidget* InGrid, const float InSize)
-{
-	check(InGrid != nullptr);
-	
-	SlotData = InSlotData;
-	Grid = InGrid;
-
-	SetSlotSize(InSize);
-}
-
-void UDA_InventorySlotWidget::SetSlotSize(const float Size) const
-{
-	const FIntPoint ItemSize = SlotData.Item->GetSize();
-	
-	Box->SetWidthOverride(ItemSize.X * Size);
-	Box->SetHeightOverride(ItemSize.Y * Size);
-}
 
 void UDA_InventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {

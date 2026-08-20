@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
-#include "Inventory/DA_InventoryTypes.h"
+#include "DA_InventorySlotWidgetBase.h"
 #include "DA_InventorySlotWidget.generated.h"
 
 class UDA_InventoryGridWidget;
@@ -13,22 +12,15 @@ class UDA_InventoryGridWidget;
  * 
  */
 UCLASS()
-class DEADAIR_API UDA_InventorySlotWidget : public UUserWidget
+class DEADAIR_API UDA_InventorySlotWidget : public UDA_InventorySlotWidgetBase
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY()
-	TWeakObjectPtr<UDA_InventoryGridWidget> Grid;
-
-	void SetData(const FDA_InventorySlot& InSlotData, UDA_InventoryGridWidget* InGrid, const float InSize);
-
-	FORCEINLINE	FDA_InventorySlot GetSlotData() const { return SlotData; }
-
+	TWeakObjectPtr<class UDA_InventoryGridWidget> Grid;
+	
 protected:
-	UPROPERTY(meta=(BindWidget))
-	TObjectPtr<class USizeBox> Box;
-
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UDA_InventoryDraggedSlotWidget> DraggedSlotWidgetClass;
 	
@@ -39,8 +31,5 @@ protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 private:
-	FDA_InventorySlot SlotData;
-	
 	void DropItem() const;
-	void SetSlotSize(float Size) const;
 };

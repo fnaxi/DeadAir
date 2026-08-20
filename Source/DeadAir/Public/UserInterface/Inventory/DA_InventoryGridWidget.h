@@ -58,4 +58,7 @@ private:
 	void OnSlotRemoved(UDA_InventorySlotWidget* Widget);
 	
 	void OnInventoryUpdated();
+
+	void CreateCells();
+	void CreateSlots();
 };
