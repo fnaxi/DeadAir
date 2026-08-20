@@ -42,7 +42,7 @@ public:
 	 *
 	 * @return An array of cell(s) coordinates relative to StartCoordinates.
 	 */
-	TArray<FIntPoint> CalculateItemSize();
+	TArray<FIntPoint> GetSizeInCells() const;
 
 	/**
 	 * Checks whether we can rotate this item.
@@ -58,8 +58,10 @@ public:
 	/** Notifies all listeners that the item has been rotated. */
 	void HandleItemRotation();
 
+	FIntPoint GetCoordinatesFromHover(const FIntPoint& HoveredCoordinates) const;
+	
 	FORCEINLINE const FIntPoint& GetStartCoordinates() const { return StartCoordinates; }
-	FORCEINLINE const TArray<FIntPoint>& GetSizeInCells() const { return SizeInCells; }
+	// FORCEINLINE const TArray<FIntPoint>& GetSizeInCells() const { return SizeInCells; }
 	
 	FORCEINLINE FGuid GetItemID() const { return ItemID; }
 
@@ -72,13 +74,13 @@ private:
 	FIntPoint StartCoordinates;
 	
 	/** All grid cells coordinates used to store this item. */
-	TArray<FIntPoint> SizeInCells; // todo: replace with GetSizeInCells() instead (single source of truth)
+	// TArray<FIntPoint> SizeInCells; // todo: replace with GetSizeInCells() instead (single source of truth)
 	
 	FGuid ItemID = FGuid::NewGuid();
 	
 	/** These hold default data before rotating the item. */
-	FIntPoint CachedSize;
-	TArray<FIntPoint> CachedSizeInCells; // todo: Remove
+	// FIntPoint CachedSize;
+	// TArray<FIntPoint> CachedSizeInCells; // todo: Remove
 
 	/** Whether the item is currently rotated. */
 	uint8 bIsRotated : 1;

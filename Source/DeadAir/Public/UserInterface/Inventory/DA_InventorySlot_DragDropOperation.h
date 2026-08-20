@@ -18,6 +18,6 @@ public:
 	// Sets default values
 	UDA_InventorySlot_DragDropOperation()
 	{
-		Pivot = EDragPivot::MouseDown;
+		Pivot = EDragPivot::CenterCenter;
 	}
 };

@@ -12,11 +12,11 @@ UDA_InventoryItem::UDA_InventoryItem(const FObjectInitializer& ObjectInitializer
 
 void UDA_InventoryItem::OnConstruct()
 {
-	SizeInCells.Empty();
-	SizeInCells = CalculateItemSize();
+	// SizeInCells.Empty();
+	// SizeInCells = GetItemSize();
 
-	CachedSize = Size;
-	CachedSizeInCells = SizeInCells;
+	// CachedSize = Size;
+	// CachedSizeInCells = SizeInCells;
 
 	bIsRotated = false;
 }
@@ -26,7 +26,12 @@ void UDA_InventoryItem::SetStartCoordinates(const FIntPoint& Coordinates)
 	StartCoordinates = Coordinates;
 }
 
-TArray<FIntPoint> UDA_InventoryItem::CalculateItemSize()
+void UDA_InventoryItem::SetOwningInventory(UDA_InventoryComponent* NewInventory)
+{
+	OwnerInventory = NewInventory;
+}
+
+TArray<FIntPoint> UDA_InventoryItem::GetSizeInCells() const
 {
 	TArray<FIntPoint> ItemSize;
 
@@ -51,7 +56,7 @@ bool UDA_InventoryItem::CanRotate()
 
 void UDA_InventoryItem::Rotate()
 {
-	if (!CanRotate())
+	/*if (!CanRotate())
 	{
 		return;
 	}
@@ -83,15 +88,16 @@ void UDA_InventoryItem::Rotate()
 	bIsRotated = true;
 
 	HandleItemRotation();
-	//OwnerInventory->HandleInventoryUpdate();
-}
-
-void UDA_InventoryItem::SetOwningInventory(UDA_InventoryComponent* NewInventory)
-{
-	OwnerInventory = NewInventory;
+	//OwnerInventory->HandleInventoryUpdate();*/
 }
 
 void UDA_InventoryItem::HandleItemRotation()
 {
 	OnItemRotated.Broadcast();
 }
+
+FIntPoint UDA_InventoryItem::GetCoordinatesFromHover(const FIntPoint& HoveredCoordinates) const
+{
+	return FIntPoint(HoveredCoordinates.X - ((Size.X - 1) / 2), HoveredCoordinates.Y - ((Size.Y - 1) / 2));
+}
+

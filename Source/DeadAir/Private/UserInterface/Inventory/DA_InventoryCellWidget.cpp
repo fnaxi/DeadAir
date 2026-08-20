@@ -55,12 +55,14 @@ void UDA_InventoryCellWidget::NativeOnDragEnter(const FGeometry& InGeometry, con
 	const UDA_InventoryItem* Item = DraggedSlot->SlotData.Item;
 	for (const FIntPoint& Element : Item->GetSizeInCells())
 	{
-		FIntPoint TargetCell = Element + Coordinates;
+		FIntPoint TargetCoordinates = Item->GetCoordinatesFromHover(Coordinates);
+		
+		FIntPoint TargetCell = Element + TargetCoordinates;
 		const int32 Index = Grid->GetCellIndex(TargetCell);
 
 		if (Index >= 0 && Index < Grid->GetCellWidgets().Num()) // Only change cell color if its within grid boundaries
 		{
-			if (Item->GetOwnerInventory()->DoesItemFit(Item->GetSizeInCells(), Coordinates, Item))
+			if (Item->GetOwnerInventory()->DoesItemFit(Item->GetSizeInCells(), TargetCoordinates, Item))
 			{
 				Grid->GetCellWidgets()[Index]->SetCellColor(ValidCellPlacementColor);
 				UE_LOG(X_Inventory, VeryVerbose, TEXT("Item fits in %s coordinates"), *Coordinates.ToString())
@@ -114,9 +116,9 @@ bool UDA_InventoryCellWidget::NativeOnDrop(const FGeometry& InGeometry, const FD
 	const FDA_InventorySlot SlotData = DraggedWidget->SlotData;
 
 	UDA_InventoryComponent* Inventory = SlotData.Item->GetOwnerInventory();
-	if( ensure(Inventory) )
+	if (ensure(Inventory != nullptr))
 	{
-		Inventory->MoveItem(DraggedWidget->SlotData, Coordinates);
+		Inventory->MoveItem(DraggedWidget->SlotData, SlotData.Item->GetCoordinatesFromHover(Coordinates));
 	}
 	
 	return true;

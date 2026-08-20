@@ -160,7 +160,7 @@ bool UDA_InventoryComponent::MoveItem(const FDA_InventorySlot& InSlot, const FIn
 		{
 			Slot.Item->SetStartCoordinates(Destination);
 			UE_LOG(X_Inventory, Log, TEXT("%s: Moved %s item to %s coordinates"), *GetOwner()->GetName(), *Slot.Item.GetName(), *Destination.ToString())
-				
+			
 			HandleInventoryUpdate();
 			return true;
 		}
