@@ -6,22 +6,11 @@
 #include "MiscUtils.h"
 #include "Components/GridPanel.h"
 #include "Components/GridSlot.h"
+#include "Core/DA_PlayerController.h"
 #include "UserInterface/Inventory/DA_InventoryCellWidget.h"
 #include "Inventory/DA_InventoryComponent.h"
 #include "Inventory/DA_InventoryItem.h"
 #include "UserInterface/Inventory/DA_InventorySlotWidget.h"
-
-void UDA_InventoryGridWidget::SetData(UDA_InventoryComponent* InInventory)
-{
-	Inventory = InInventory;
-	check(Inventory != nullptr);
-	
-	Inventory->Initialize();
-	Inventory->OnInventoryUpdated.AddUObject(this, &ThisClass::OnInventoryUpdated);
-
-	CreateCells();
-	CreateSlots();
-}
 
 int32 UDA_InventoryGridWidget::GetCellIndex(const FIntPoint& InCoordinates)
 {
@@ -48,7 +37,16 @@ void UDA_InventoryGridWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	
+	Inventory = GetOwningPlayer()->GetPawn()->GetComponentByClass<UDA_InventoryComponent>();
+	checkf(Inventory.IsValid(), TEXT("The pawn does not have the inventory component!"));
+	
+	Inventory->Initialize();
+	Inventory->OnInventoryUpdated.AddUObject(this, &ThisClass::OnInventoryUpdated);
+
 	Grid->ClearChildren();
+	
+	CreateCells();
+	CreateSlots();
 }
 
 void UDA_InventoryGridWidget::OnCellCreated(UDA_InventoryCellWidget* Widget)

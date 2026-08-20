@@ -115,9 +115,6 @@ public:
 	/** Notifies all listeners that the inventory has been updated. */
 	void HandleInventoryUpdate();
 
-	/** Logs the inventory content for debugging. */
-	void PrintInventoryContent();
-
 	FORCEINLINE TArray<FIntPoint> GetCells() const { return Cells; }
 	FORCEINLINE TArray<FDA_InventorySlot> GetSlots() const { return Slots; }
 

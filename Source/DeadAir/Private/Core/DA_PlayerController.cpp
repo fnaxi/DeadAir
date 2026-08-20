@@ -12,14 +12,6 @@
 
 DEFINE_LOG_CATEGORY_STATIC(X_PlayerController, Log, All)
 
-void ADA_PlayerController::XPrintInventory()
-{
-	if (ensure(InventoryComponent != nullptr))
-	{
-		InventoryComponent->PrintInventoryContent();
-	}
-}
-
 void ADA_PlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -33,22 +25,8 @@ void ADA_PlayerController::BeginPlay()
 			Subsystem->AddMappingContext(MappingContext, 0);
 		}
 	}
-	
-	// Create inventory widget
-	{
-		ENSURE_KISMET(InventoryWidgetClass)
-		
-		InventoryWidget = CreateWidget<UDA_InventoryWidget>(this, InventoryWidgetClass);
-		if (InventoryWidget)
-		{
-			InventoryComponent = GetPawn<ADA_Character>()->GetComponentByClass<UDA_InventoryComponent>();
-			
-			InventoryWidget->SetInventory(InventoryComponent.Get());
-			InventoryWidget->AddToViewport();
-			
-			SetUIMode(true);
-		}
-	}
+
+	SetUIMode(true);
 }
 
 void ADA_PlayerController::SetUIMode(bool bUIMode)

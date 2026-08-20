@@ -22,7 +22,7 @@ public:
 	ADA_Character();
 	
 protected:
-	UPROPERTY(VisibleAnywhere, Category="Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	TObjectPtr<class UDA_InventoryComponent> Inventory;
 
 	UPROPERTY(VisibleAnywhere, Category="Components")

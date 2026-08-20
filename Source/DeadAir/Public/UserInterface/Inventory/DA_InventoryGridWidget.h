@@ -19,8 +19,6 @@ class DEADAIR_API UDA_InventoryGridWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void SetData(UDA_InventoryComponent* InInventory);
-
 	/** Returns index of cell widget in cells widgets array from the specified cell coordinates. -1 if none found. */
 	int32 GetCellIndex(const FIntPoint& InCoordinates);
 
