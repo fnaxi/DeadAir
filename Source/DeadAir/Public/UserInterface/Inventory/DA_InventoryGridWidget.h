@@ -26,7 +26,9 @@ public:
 
 	/** Reset all grid cells to their default color. */
 	void ResetCellsToDefaultColor();
-
+	
+	virtual void NativeOnInitialized() override;
+	
 	FORCEINLINE TArray<TObjectPtr<UDA_InventoryCellWidget>> GetCellWidgets() const { return CellWidgets; }
 	FORCEINLINE TArray<TObjectPtr<UDA_InventorySlotWidget>> GetSlotWidgets() const { return SlotWidgets; }
 	

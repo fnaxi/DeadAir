@@ -18,8 +18,6 @@ void UDA_InventoryGridWidget::SetData(UDA_InventoryComponent* InInventory)
 	
 	Inventory->Initialize();
 	Inventory->OnInventoryUpdated.AddUObject(this, &ThisClass::OnInventoryUpdated);
-
-	Grid->ClearChildren();
 	
 	CellWidgets.Empty();
 	for (const FIntPoint& Coordinates : Inventory->GetCells())
@@ -71,6 +69,13 @@ void UDA_InventoryGridWidget::ResetCellsToDefaultColor()
 	}
 }
 
+void UDA_InventoryGridWidget::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+	
+	Grid->ClearChildren();
+}
+
 void UDA_InventoryGridWidget::OnCellCreated(UDA_InventoryCellWidget* Widget)
 {
 	if (!Widget || !Grid) return;
@@ -119,10 +124,7 @@ void UDA_InventoryGridWidget::OnInventoryUpdated()
 		UDA_InventorySlotWidget* SlotWidget = CreateWidget<UDA_InventorySlotWidget>(GetOwningPlayer(), SlotWidgetClass);
 		if (SlotWidget != nullptr)
 		{
-			check(SlotWidget);
-
 			SlotWidgets.Add(SlotWidget);
-		
 			SlotWidget->SetData(Data, this, Inventory->GetCellSize());
 		
 			OnSlotCreated(SlotWidget);
