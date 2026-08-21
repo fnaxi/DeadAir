@@ -4,19 +4,19 @@
 #include "UserInterface/DA_HUD.h"
 
 #include "MiscUtils.h"
-#include "UserInterface/DA_GameWidget.h"
+#include "UserInterface/DA_LayoutWidget.h"
 #include "UserInterface/Inventory/DA_InventoryWidget.h"
 
 void ADA_HUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ENSURE_KISMET(GameWidgetClass)
+	ENSURE_KISMET(LayoutWidgetClass)
 	
-	GameWidget = CreateWidget<UDA_GameWidget>(GetOwningPlayerController(), GameWidgetClass);
-	if (GameWidget)
+	LayoutWidget = CreateWidget<UDA_LayoutWidget>(GetOwningPlayerController(), LayoutWidgetClass);
+	if (LayoutWidget)
 	{
-		GameWidget->AddToViewport();
+		LayoutWidget->AddToViewport();
 	}
 }
 

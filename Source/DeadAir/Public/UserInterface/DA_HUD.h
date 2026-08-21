@@ -19,9 +19,9 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class UDA_GameWidget> GameWidgetClass;
+	TSubclassOf<class UDA_LayoutWidget> LayoutWidgetClass;
 	
 private:
 	UPROPERTY()
-	TObjectPtr<UDA_GameWidget> GameWidget;
+	TObjectPtr<UDA_LayoutWidget> LayoutWidget;
 };

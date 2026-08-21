@@ -5,9 +5,8 @@
 
 #include "MiscUtils.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
-#include "Blueprint/WidgetLayoutLibrary.h"
-#include "Components/GridSlot.h"
 #include "Components/Image.h"
+#include "Components/PanelWidget.h"
 #include "Inventory/DA_InventoryItem.h"
 #include "UserInterface/Inventory/DA_InventorySlotTooltip.h"
 #include "UserInterface/Inventory/DA_InventoryDraggedSlotWidget.h"
@@ -26,11 +25,6 @@ void UDA_InventorySlotWidget::SetData(const FDA_InventorySlot& InSlotData, const
 	}
 }
 
-void UDA_InventorySlotWidget::NativeConstruct()
-{
-	Super::NativeConstruct();
-}
-
 void UDA_InventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)
 {
 	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
@@ -47,15 +41,8 @@ void UDA_InventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, 
 			DragDropOperation->Payload = this;
 			DragDropOperation->DefaultDragVisual = DraggedWidget;
 
-			// todo: Encapsulate
-			for (UDA_InventorySlotWidget* SlotWidget : Grid->GetSlotWidgets())
-			{
-				if (UGridSlot* GridSlot = UWidgetLayoutLibrary::SlotAsGridSlot(SlotWidget))
-				{
-					GridSlot->SetLayer(-1);
-				}
-			}
-
+			Grid->ChangeSlotsLayer(-1);
+			
 			OutOperation = DragDropOperation;
 		}
 	}
@@ -66,7 +53,7 @@ void UDA_InventorySlotWidget::NativeOnDragCancelled(const FDragDropEvent& InDrag
 	Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
 
 	UE_LOG(X_Inventory, Verbose, TEXT("%s: Drag&Drop was canceled"), *SlotData.Item->GetOwnerInventory()->GetOwner()->GetName())
-	DropItem();
+	Grid->ChangeSlotsLayer(1);
 }
 
 bool UDA_InventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
@@ -74,24 +61,13 @@ bool UDA_InventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FD
 	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 
 	UE_LOG(X_Inventory, Verbose, TEXT("%s: Drag&Drop operation has ended"), *SlotData.Item->GetOwnerInventory()->GetOwner()->GetName())
-	DropItem();
+	Grid->ChangeSlotsLayer(1);
+	
 	return true;
 }
 
 FReply UDA_InventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	return UWidgetBlueprintLibrary::DetectDragIfPressed(InMouseEvent, this, EKeys::LeftMouseButton).NativeReply;
-}
-
-void UDA_InventorySlotWidget::DropItem() const
-{
-	// todo: Encapsulate
-	for (UDA_InventorySlotWidget* SlotWidget : Grid->GetSlotWidgets())
-	{
-		if (UGridSlot* GridSlot = UWidgetLayoutLibrary::SlotAsGridSlot(SlotWidget))
-		{
-			GridSlot->SetLayer(1);
-		}
-	}
 }
 

@@ -4,15 +4,15 @@
 #include "UserInterface/Inventory/DA_InventoryGridWidget.h"
 
 #include "MiscUtils.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/GridPanel.h"
 #include "Components/GridSlot.h"
-#include "Core/DA_PlayerController.h"
 #include "UserInterface/Inventory/DA_InventoryCellWidget.h"
 #include "Inventory/DA_InventoryComponent.h"
 #include "Inventory/DA_InventoryItem.h"
 #include "UserInterface/Inventory/DA_InventorySlotWidget.h"
 
-int32 UDA_InventoryGridWidget::GetCellIndex(const FIntPoint& InCoordinates)
+int32 UDA_InventoryGridWidget::GetCellIndex(const FIntPoint& InCoordinates) const
 {
 	for (int32 Index = 0; Index < CellWidgets.Num(); Index++)
 	{
@@ -30,6 +30,17 @@ void UDA_InventoryGridWidget::ResetCellsToDefaultColor()
 	for (const UDA_InventoryCellWidget* Cell : CellWidgets)
 	{
 		Cell->SetCellColor(Cell->GetDefaultCellColor());
+	}
+}
+
+void UDA_InventoryGridWidget::ChangeSlotsLayer(int32 Layer)
+{
+	for (UDA_InventorySlotWidget* SlotWidget : SlotWidgets)
+	{
+		if (UGridSlot* GridSlot = UWidgetLayoutLibrary::SlotAsGridSlot(SlotWidget))
+		{
+			GridSlot->SetLayer(Layer);
+		}
 	}
 }
 

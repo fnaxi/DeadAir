@@ -89,31 +89,22 @@ bool UDA_InventoryComponent::DoesItemFit(TArray<FIntPoint> const& SizeInCells, c
 
 FIntPoint UDA_InventoryComponent::GetFreeCell()
 {
-	for (const FIntPoint& Coordinates : Cells)
+	const FIntPoint* FoundCoordinates = Cells.FindByPredicate([this](const FIntPoint& Coordinates)
 	{
-		if (IsFree(Coordinates)) // todo: Replace with predicate
-		{
-			return Coordinates;
-		}
-	}
+		return IsFree(Coordinates);
+	});
 
-	return FIntPoint(-1, -1);
+	return FoundCoordinates ? *FoundCoordinates : FIntPoint(-1);
 }
 
 FIntPoint UDA_InventoryComponent::GetFreeCellThatFitsItem(TArray<FIntPoint> const& SizeInCells)
 {
-	for (const FIntPoint& Coordinates : Cells)
+	const FIntPoint* FoundCoordinates = Cells.FindByPredicate([this, SizeInCells](const FIntPoint& Coordinates)
 	{
-		if (IsFree(Coordinates))
-		{
-			if (DoesItemFit(SizeInCells, Coordinates))
-			{
-				return Coordinates;
-			}
-		}
-	}
+		return IsFree(Coordinates) && DoesItemFit(SizeInCells, Coordinates);
+	});
 
-	return FIntPoint(-1, -1);
+	return FoundCoordinates ? *FoundCoordinates : FIntPoint(-1);
 }
 
 bool UDA_InventoryComponent::AddItem(const FDA_InventorySlot& Slot)

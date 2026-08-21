@@ -20,10 +20,12 @@ class DEADAIR_API UDA_InventoryGridWidget : public UUserWidget
 
 public:
 	/** Returns index of cell widget in cells widgets array from the specified cell coordinates. -1 if none found. */
-	int32 GetCellIndex(const FIntPoint& InCoordinates);
+	int32 GetCellIndex(const FIntPoint& InCoordinates) const;
 
 	/** Reset all grid cells to their default color. */
 	void ResetCellsToDefaultColor();
+
+	void ChangeSlotsLayer(int32 Layer);
 	
 	virtual void NativeOnInitialized() override;
 	
@@ -31,7 +33,7 @@ public:
 	FORCEINLINE TArray<TObjectPtr<UDA_InventorySlotWidget>> GetSlotWidgets() const { return SlotWidgets; }
 	
 protected:
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<class UGridPanel> Grid;
 	
 	UPROPERTY(EditDefaultsOnly)

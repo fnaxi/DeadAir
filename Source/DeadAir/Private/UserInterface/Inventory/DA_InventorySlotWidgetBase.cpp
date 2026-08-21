@@ -3,6 +3,7 @@
 
 #include "UserInterface/Inventory/DA_InventorySlotWidgetBase.h"
 
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Image.h"
 #include "Components/SizeBox.h"
 #include "Inventory/DA_InventoryItem.h"

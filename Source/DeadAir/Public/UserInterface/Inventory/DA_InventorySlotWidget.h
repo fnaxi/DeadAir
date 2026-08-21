@@ -6,8 +6,6 @@
 #include "DA_InventorySlotWidgetBase.h"
 #include "DA_InventorySlotWidget.generated.h"
 
-class UDA_InventoryGridWidget;
-
 /**
  * 
  */
@@ -28,15 +26,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UDA_InventoryDraggedSlotWidget> DraggedSlotWidgetClass;
-
-	virtual void NativeConstruct() override;
 	
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation) override;
 	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;
 
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-
-private:
-	void DropItem() const;
 };

@@ -100,15 +100,7 @@ bool UDA_InventoryCellWidget::NativeOnDrop(const FGeometry& InGeometry, const FD
 	check(Payload != nullptr);
 
 	Grid->ResetCellsToDefaultColor();
-	
-	// todo: Encapsulate
-	for (UDA_InventorySlotWidget* SlotWidget : Payload->Grid->GetSlotWidgets())
-	{
-		if (UGridSlot* GridSlot = UWidgetLayoutLibrary::SlotAsGridSlot(SlotWidget))
-		{
-			GridSlot->SetLayer(1);
-		}
-	}
+	Grid->ChangeSlotsLayer(1);
 	
 	const UDA_InventoryDraggedSlotWidget* DraggedWidget = Cast<UDA_InventoryDraggedSlotWidget>(InOperation->DefaultDragVisual);
 	check(DraggedWidget != nullptr);

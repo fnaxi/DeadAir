@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "CommonUserWidget.h"
 #include "Inventory/DA_InventoryTypes.h"
 #include "DA_InventorySlotWidgetBase.generated.h"
 
@@ -11,7 +11,7 @@
  * 
  */
 UCLASS(Abstract)
-class DEADAIR_API UDA_InventorySlotWidgetBase : public UUserWidget
+class DEADAIR_API UDA_InventorySlotWidgetBase : public UCommonUserWidget
 {
 	GENERATED_BODY()
 
