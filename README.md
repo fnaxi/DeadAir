@@ -27,7 +27,7 @@
 </div>
 
 ## About
-This project is a port of the [S.T.A.L.K.E.R.](https://store.steampowered.com/app/4500/STALKER_Shadow_of_Chernobyl/) mod [Dead Air](https://www.moddb.com/mods/dead-air) to [Unreal Engine 5](https://www.unrealengine.com/en-US/unreal-engine-5).
+This project is a port of the [S.T.A.L.K.E.R.](https://store.steampowered.com/app/4500/STALKER_Shadow_of_Chernobyl/) mod called [Dead Air](https://www.moddb.com/mods/dead-air) to [Unreal Engine 5](https://www.unrealengine.com/en-US/unreal-engine-5).
 The primary goal is to rework the original [Dead Air](https://www.moddb.com/mods/dead-air) beta using the new engine, adding new features and ideas.
 
 You can follow development progress on our [Trello](https://trello.com/b/2GXvripJ) board!
