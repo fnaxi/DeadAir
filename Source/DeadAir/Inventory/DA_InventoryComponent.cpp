@@ -111,13 +111,13 @@ bool UDA_InventoryComponent::AddItem(const FDA_InventorySlot& Slot)
 	if (AreCoordinatesValid(Slot.Item->GetStartCoordinates())) // todo: check that cell is free
 	{
 		Slots.Add(Slot);
-		UE_LOG(X_Inventory, Verbose, TEXT("%s: Added %i item(s) of type %s"), *GetOwner()->GetName(), Slot.Quantity, *Slot.Item->GetName())
+		UE_LOG(X_Inventory, Verbose, TEXT("%s: Added %i \"%s\" item(s)"), *GetOwner()->GetName(), Slot.Quantity, *Slot.Item->GetItemName().ToString())
 	
 		HandleInventoryUpdate();
 		return true;
 	}
 	
-	UE_LOG(X_Inventory, Log, TEXT("%s: Can't add %i item(s) of type %s!"), *GetOwner()->GetName(), Slot.Quantity, *Slot.Item->GetName())
+	UE_LOG(X_Inventory, Log, TEXT("%s: Can't add %i \"%s\" item(s)!"), *GetOwner()->GetName(), Slot.Quantity, *Slot.Item->GetItemName().ToString())
 	return false;
 }
 
@@ -136,7 +136,7 @@ bool UDA_InventoryComponent::AddNewItem(UDA_InventoryItemDefinition* Definition,
 bool UDA_InventoryComponent::RemoveItem(const FDA_InventorySlot& Slot)
 {
 	Slots.Remove(Slot);
-	UE_LOG(X_Inventory, Verbose, TEXT("%s: Removed %s item"), *GetOwner()->GetName(), *Slot.Item->GetName())
+	UE_LOG(X_Inventory, Verbose, TEXT("%s: Removed \"%s\" item"), *GetOwner()->GetName(), *Slot.Item->GetItemName().ToString())
 	
 	return true;
 }
@@ -150,14 +150,14 @@ bool UDA_InventoryComponent::MoveItem(const FDA_InventorySlot& InSlot, const FIn
 		if (DoesItemFit(Slot.Item->GetSizeInCells(), Destination, Slot.Item))
 		{
 			Slot.Item->SetStartCoordinates(Destination);
-			UE_LOG(X_Inventory, Log, TEXT("%s: Moved %s item to %s coordinates"), *GetOwner()->GetName(), *Slot.Item.GetName(), *Destination.ToString())
+			UE_LOG(X_Inventory, Log, TEXT("%s: Moved \"%s\" item to %s coordinates"), *GetOwner()->GetName(), *Slot.Item->GetItemName().ToString(), *Destination.ToString())
 			
 			HandleInventoryUpdate();
 			return true;
 		}
 	}
 
-	UE_LOG(X_Inventory, Log, TEXT("%s: Item %s can't be moved to %s coordinates!"), *GetOwner()->GetName(), *InSlot.Item.GetName(), *Destination.ToString())
+	UE_LOG(X_Inventory, Log, TEXT("%s: Item \"%s\" can't be moved to %s coordinates!"), *GetOwner()->GetName(), *InSlot.Item->GetItemName().ToString(), *Destination.ToString())
 	return false;
 }
 

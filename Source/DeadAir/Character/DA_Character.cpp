@@ -3,10 +3,13 @@
 
 #include "Character/DA_Character.h"
 
+#include "DA_LogChannels.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "Camera/CameraComponent.h"
+#include "Engine/AssetManager.h"
 #include "Inventory/DA_InventoryComponent.h"
+#include "Inventory/DA_InventoryItemDefinition.h"
 
 // Sets default values
 ADA_Character::ADA_Character()
@@ -21,6 +24,37 @@ ADA_Character::ADA_Character()
 	Hand->SetupAttachment(Camera);
 	
 	Inventory = CreateDefaultSubobject<UDA_InventoryComponent>(TEXT("InventoryComponent"));
+}
+
+void ADA_Character::XAddInventoryItem(const FString& ItemName)
+{
+	const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+	const IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+
+	FARFilter Filter;
+	Filter.ClassPaths.Add(UDA_InventoryItemDefinition::StaticClass()->GetClassPathName());
+	Filter.bRecursiveClasses = true;
+
+	TArray<FAssetData> FoundAssets;
+	AssetRegistry.GetAssets(Filter, FoundAssets);
+
+	UDA_InventoryItemDefinition* ItemDefinition = nullptr;
+	for (const FAssetData& AssetData : FoundAssets)
+	{
+		if (AssetData.AssetName.ToString() == ItemName)
+		{
+			ItemDefinition = Cast<UDA_InventoryItemDefinition>(AssetData.GetAsset());
+			break;
+		}
+	}
+
+	if (!IsValid(ItemDefinition))
+	{
+		UE_LOG(X_Inventory, Warning, TEXT("%s: Can't find item definition with name: %s!"), *GetName(), *ItemName);
+		return;
+	}
+
+	Inventory->AddNewItem(ItemDefinition);
 }
 
 void ADA_Character::PostInitializeComponents()

@@ -20,7 +20,10 @@ class DEADAIR_API ADA_Character : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ADA_Character();
-	
+
+	UFUNCTION(exec)
+	void XAddInventoryItem(const FString& ItemName);
+
 	virtual void PostInitializeComponents() override;
 	
 protected:

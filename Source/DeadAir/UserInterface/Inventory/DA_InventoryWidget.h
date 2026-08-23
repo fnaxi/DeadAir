@@ -3,19 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CommonActivatableWidget.h"
+#include "UserInterface/DA_ActivatableWidget.h"
 #include "DA_InventoryWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DEADAIR_API UDA_InventoryWidget : public UCommonActivatableWidget
+class DEADAIR_API UDA_InventoryWidget : public UDA_ActivatableWidget
 {
 	GENERATED_BODY()
-
-public:
-	virtual TOptional<FUIInputConfig> GetDesiredInputConfig() const override;
 
 protected:
 	UPROPERTY(meta=(BindWidget))
