@@ -7,7 +7,20 @@ public class DeadAir : ModuleRules
 	public DeadAir(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
+		
+		// Game
+		PublicDependencyModuleNames.AddRange(
+		[
+		]);
+		
+		// Plugins
+		PublicDependencyModuleNames.AddRange(
+		[
+			"CommonGame",
+			// "GameplayMessageRouter"
+		]);
+		
+		// Engine
 		PublicDependencyModuleNames.AddRange(
 		[
 			"Core",
@@ -17,6 +30,9 @@ public class DeadAir : ModuleRules
 			
 			"InputCore",
 			"EnhancedInput",
+			
+			"GameplayAbilities",
+			"GameplayTags",
 			
 			"HeadMountedDisplay",
 			"UMG",
@@ -35,5 +51,14 @@ public class DeadAir : ModuleRules
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
 
 		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
+		
+		PublicIncludePaths.AddRange(
+		[
+			"DeadAir"
+		]);
+
+		PrivateIncludePaths.AddRange(
+		[
+		]);
 	}
 }
