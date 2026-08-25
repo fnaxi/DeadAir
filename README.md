@@ -16,7 +16,7 @@
 -->
 	<br/>
 	<img src="https://cdn.jsdelivr.net/gh/Readme-Workflows/Readme-Icons@main/icons/octicons/StarredRepositoryYellow.svg" alt=""/>
-	<a href="https://trello.com/b/2GXvripJ">Trello Board</a>
+	<a href="https://trello.com/404">Trello Board</a>
 	&middot;
 	<img src="https://cdn.jsdelivr.net/gh/Readme-Workflows/Readme-Icons@main/icons/octicons/IssueClosedOld.svg" alt=""/>
 	<a href="https://github.com/fnaxi/DeadAir/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
@@ -102,14 +102,6 @@ Also, project uses content such as models, animations and sounds from [Dead Air]
 - Dead Air Weapon Evolution (by WILD_USEC)
 
   https://www.moddb.com/games/stalker-call-of-pripyat/addons/dead-air-weapons-evolution-obt
-
-- Backpack Animation from S.T.A.L.K.E.R. 2 (by Aphrodite_child and Lassie)
-
-  https://www.moddb.com/addons/s-t-a-l-k-e-r-2-hoc-backpack
-
-- New Walk & Run Animation (by Diazzer)
-
-  https://www.moddb.com/mods/stalker-anomaly/addons/new-walk-run-animation
 
 These [Fab](https://www.fab.com) assets are used:
 
