@@ -52,13 +52,13 @@ private:
 	UPROPERTY()
 	TWeakObjectPtr<UDA_InventoryComponent> Inventory;
 	
-	void OnCellCreated(UDA_InventoryCellWidget* Widget);
-	
-	void OnSlotCreated(UDA_InventorySlotWidget* Widget);
-	void OnSlotRemoved(UDA_InventorySlotWidget* Widget);
-	
-	void OnInventoryUpdated();
-
 	void CreateCells();
 	void CreateSlots();
+	
+	void OnCellCreated(UDA_InventoryCellWidget* Widget) const;
+	
+	void OnSlotCreated(UDA_InventorySlotWidget* Widget) const;
+	void OnSlotRemoved(UDA_InventorySlotWidget* Widget) const;
+	
+	void OnInventoryUpdated();
 };

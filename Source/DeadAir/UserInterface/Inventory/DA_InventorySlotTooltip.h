@@ -17,7 +17,7 @@ class DEADAIR_API UDA_InventorySlotTooltip : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void SetData(const FDA_InventorySlot& InSlot);
+	void InitializeTooltip(const FDA_InventorySlot& InSlot);
 	
 protected:
 	UPROPERTY(meta=(BindWidget))

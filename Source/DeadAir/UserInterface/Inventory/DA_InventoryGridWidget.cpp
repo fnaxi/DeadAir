@@ -3,6 +3,7 @@
 
 #include "UserInterface/Inventory/DA_InventoryGridWidget.h"
 
+#include "DA_LogChannels.h"
 #include "DA_MiscUtils.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/GridPanel.h"
@@ -33,7 +34,7 @@ void UDA_InventoryGridWidget::ResetCellsToDefaultColor()
 	}
 }
 
-void UDA_InventoryGridWidget::ChangeSlotsLayer(int32 Layer)
+void UDA_InventoryGridWidget::ChangeSlotsLayer(const int32 Layer)
 {
 	for (UDA_InventorySlotWidget* SlotWidget : SlotWidgets)
 	{
@@ -59,49 +60,6 @@ void UDA_InventoryGridWidget::NativeOnInitialized()
 	CreateSlots();
 }
 
-void UDA_InventoryGridWidget::OnCellCreated(UDA_InventoryCellWidget* Widget)
-{
-	if (!Widget || !Grid) return;
-
-	if (UGridSlot* GridSlot = Grid->AddChildToGrid(Widget, Widget->GetCoordinates().Y, Widget->GetCoordinates().X))
-	{
-		GridSlot->SetRowSpan(1);
-		GridSlot->SetColumnSpan(1);
-	}
-}
-
-void UDA_InventoryGridWidget::OnSlotCreated(UDA_InventorySlotWidget* Widget)
-{
-	if (!Widget || !Grid) return;
-
-	if (const UDA_InventoryItem* Item = Widget->GetSlotData().Item)
-	{
-		if (UGridSlot* GridSlot = Grid->AddChildToGrid(Widget, Item->GetStartCoordinates().Y, Item->GetStartCoordinates().X))
-		{
-			GridSlot->SetColumnSpan(Item->GetSize().X);
-			GridSlot->SetRowSpan(Item->GetSize().Y);
-			GridSlot->SetLayer(1);
-		}
-	}
-}
-
-void UDA_InventoryGridWidget::OnSlotRemoved(UDA_InventorySlotWidget* Widget)
-{
-	if (!Widget || !Grid) return;
-
-	Grid->RemoveChild(Widget);
-}
-
-void UDA_InventoryGridWidget::OnInventoryUpdated()
-{
-	for (UDA_InventorySlotWidget* SlotWidget : SlotWidgets)
-	{
-		OnSlotRemoved(SlotWidget);
-	}
-
-	CreateSlots();
-}
-
 void UDA_InventoryGridWidget::CreateCells()
 {
 	CellWidgets.Empty();
@@ -113,7 +71,7 @@ void UDA_InventoryGridWidget::CreateCells()
 		check(CellWidget != nullptr);
 
 		CellWidgets.Add(CellWidget);
-		CellWidget->SetData(Coordinates, this, Inventory->GetCellSize());
+		CellWidget->InitializeCell(Coordinates, this, Inventory->GetCellSize());
 
 		OnCellCreated(CellWidget);
 	}
@@ -130,10 +88,55 @@ void UDA_InventoryGridWidget::CreateSlots()
 		check(SlotWidget != nullptr);
 
 		SlotWidgets.Add(SlotWidget);
-		SlotWidget->SetData(Data, Inventory->GetCellSize());
-		SlotWidget->Grid = this; // todo: Use parent widget instead
+		
+		SlotWidget->InitializeSlot(Data, Inventory->GetCellSize());
+		SlotWidget->OnBeginDrag.BindLambda( [this]() { ChangeSlotsLayer(-1); } );
+		SlotWidget->OnEndDrag.BindLambda( [this]() { ChangeSlotsLayer(1); } );
 		
 		OnSlotCreated(SlotWidget);
 	}
+}
+
+void UDA_InventoryGridWidget::OnCellCreated(UDA_InventoryCellWidget* Widget) const
+{
+	if (!Widget || !Grid) return;
+
+	if (UGridSlot* GridSlot = Grid->AddChildToGrid(Widget, Widget->GetCoordinates().Y, Widget->GetCoordinates().X))
+	{
+		GridSlot->SetRowSpan(1);
+		GridSlot->SetColumnSpan(1);
+	}
+}
+
+void UDA_InventoryGridWidget::OnSlotCreated(UDA_InventorySlotWidget* Widget) const
+{
+	if (!Widget || !Grid) return;
+
+	if (const UDA_InventoryItem* Item = Widget->GetSlotData().Item)
+	{
+		if (UGridSlot* GridSlot = Grid->AddChildToGrid(Widget, Item->GetStartCoordinates().Y, Item->GetStartCoordinates().X))
+		{
+			GridSlot->SetColumnSpan(Item->GetSize().X);
+			GridSlot->SetRowSpan(Item->GetSize().Y);
+			GridSlot->SetLayer(1);
+		}
+	}
+}
+
+void UDA_InventoryGridWidget::OnSlotRemoved(UDA_InventorySlotWidget* Widget) const
+{
+	if (!Widget || !Grid) return;
+
+	Grid->RemoveChild(Widget);
+}
+
+void UDA_InventoryGridWidget::OnInventoryUpdated()
+{
+	for (UDA_InventorySlotWidget* SlotWidget : SlotWidgets)
+	{
+		OnSlotRemoved(SlotWidget);
+	}
+
+	CreateSlots();
 }
 

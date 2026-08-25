@@ -7,7 +7,7 @@
 #include "Inventory/DA_InventoryItem.h"
 #include "Inventory/DA_InventoryTypes.h"
 
-void UDA_InventorySlotTooltip::SetData(const FDA_InventorySlot& InSlot)
+void UDA_InventorySlotTooltip::InitializeTooltip(const FDA_InventorySlot& InSlot)
 {
 	NameText->SetText(InSlot.Item->GetItemName());
 	DescriptionText->SetText(InSlot.Item->GetItemDescription());

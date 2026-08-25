@@ -7,7 +7,7 @@
 #include "Components/SizeBox.h"
 #include "Inventory/DA_InventoryItem.h"
 
-void UDA_InventorySlotWidgetBase::SetData(const FDA_InventorySlot& InSlotData, const float InSize)
+void UDA_InventorySlotWidgetBase::InitializeSlot(const FDA_InventorySlot& InSlotData, const float InSize)
 {
 	SlotData = InSlotData;
 

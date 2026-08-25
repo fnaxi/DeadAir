@@ -16,7 +16,7 @@ class DEADAIR_API UDA_InventorySlotWidgetBase : public UCommonUserWidget
 	GENERATED_BODY()
 
 public:
-	virtual void SetData(const FDA_InventorySlot& InSlotData, const float InSize);
+	virtual void InitializeSlot(const FDA_InventorySlot& InSlotData, const float InSize);
 
 	FORCEINLINE	FDA_InventorySlot GetSlotData() const { return SlotData; }
 	

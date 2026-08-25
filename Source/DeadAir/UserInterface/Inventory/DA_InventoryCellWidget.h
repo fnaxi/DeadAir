@@ -16,11 +16,8 @@ class DEADAIR_API UDA_InventoryCellWidget : public UUserWidget
 {
 	GENERATED_BODY()
 		
-public:
-	UPROPERTY(Config)
-	bool bUseDebugCoordinates;
-
-	void SetData(const FIntPoint& InCoordinates, UDA_InventoryGridWidget* InParentWidget, const float InSize);
+public:	
+	void InitializeCell(const FIntPoint& InCoordinates, UDA_InventoryGridWidget* InGrid, const float InSize);
 	
 	void SetCellColor(const FSlateBrush& Brush) const;
 	
@@ -54,7 +51,10 @@ protected:
 private:
 	UPROPERTY()
 	TWeakObjectPtr<UDA_InventoryGridWidget> Grid;
-
+	
+	UPROPERTY(Config)
+	bool bUseDebugCoordinates;
+	
 	/** Current cell coordinates in the grid. */
 	FIntPoint Coordinates;
 

@@ -6,6 +6,8 @@
 #include "DA_InventorySlotWidgetBase.h"
 #include "DA_InventorySlotWidget.generated.h"
 
+DECLARE_DELEGATE(FDA_OnSlotDragSignature)
+
 /**
  * 
  */
@@ -15,10 +17,10 @@ class DEADAIR_API UDA_InventorySlotWidget : public UDA_InventorySlotWidgetBase
 	GENERATED_BODY()
 
 public:
-	UPROPERTY()
-	TWeakObjectPtr<class UDA_InventoryGridWidget> Grid;
-
-	virtual void SetData(const FDA_InventorySlot& InSlotData, const float InSize) override;
+	FDA_OnSlotDragSignature OnBeginDrag;
+	FDA_OnSlotDragSignature OnEndDrag;
+	
+	virtual void InitializeSlot(const FDA_InventorySlot& InSlotData, const float InSize) override;
 	
 protected:
 	UPROPERTY(EditDefaultsOnly)

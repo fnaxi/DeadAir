@@ -13,10 +13,10 @@
 #include "UserInterface/Inventory/DA_InventoryGridWidget.h"
 #include "UserInterface/Inventory/DA_InventorySlot_DragDropOperation.h"
 
-void UDA_InventoryCellWidget::SetData(const FIntPoint& InCoordinates, UDA_InventoryGridWidget* InParentWidget, const float InSize)
+void UDA_InventoryCellWidget::InitializeCell(const FIntPoint& InCoordinates, UDA_InventoryGridWidget* InGrid, const float InSize)
 {
 	Coordinates = InCoordinates;
-	Grid = InParentWidget;
+	Grid = InGrid;
 	check(Grid.IsValid());
 
 	CoordinatesText->SetText(FText::FromString(FString::Printf(TEXT("(%i;%i)"), Coordinates.X, Coordinates.Y)));
@@ -55,10 +55,9 @@ void UDA_InventoryCellWidget::NativeOnDragEnter(const FGeometry& InGeometry, con
 	for (const FIntPoint& Element : Item->GetSizeInCells())
 	{
 		FIntPoint TargetCoordinates = Item->GetCoordinatesFromHover(Coordinates);
-		
 		FIntPoint TargetCell = Element + TargetCoordinates;
+		
 		const int32 Index = Grid->GetCellIndex(TargetCell);
-
 		if (Index >= 0 && Index < Grid->GetCellWidgets().Num()) // Only change cell color if its within grid boundaries
 		{
 			if (Item->GetOwnerInventory()->DoesItemFit(Item->GetSizeInCells(), TargetCoordinates, Item))
@@ -99,7 +98,6 @@ bool UDA_InventoryCellWidget::NativeOnDrop(const FGeometry& InGeometry, const FD
 	check(Payload != nullptr);
 
 	Grid->ResetCellsToDefaultColor();
-	Grid->ChangeSlotsLayer(1);
 	
 	const UDA_InventoryDraggedSlotWidget* DraggedWidget = Cast<UDA_InventoryDraggedSlotWidget>(InOperation->DefaultDragVisual);
 	check(DraggedWidget != nullptr);

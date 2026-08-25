@@ -61,10 +61,7 @@ void ADA_Character::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	if (ensure(Inventory != nullptr))
-	{
-		Inventory->Initialize();
-	}
+	Inventory->Initialize();
 }
 
 // Called when the game starts or when spawned

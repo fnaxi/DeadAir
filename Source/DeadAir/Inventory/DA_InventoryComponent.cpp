@@ -111,13 +111,13 @@ bool UDA_InventoryComponent::AddItem(const FDA_InventorySlot& Slot)
 	if (AreCoordinatesValid(Slot.Item->GetStartCoordinates())) // todo: check that cell is free
 	{
 		Slots.Add(Slot);
-		UE_LOG(X_Inventory, Verbose, TEXT("%s: Added %i \"%s\" item(s)"), *GetOwner()->GetName(), Slot.Quantity, *Slot.Item->GetItemName().ToString())
+		UE_LOG(X_Inventory, Verbose, TEXT("%s: Added \"%s\" item"), *GetOwner()->GetName(), *Slot.Item->GetItemName().ToString())
 	
 		HandleInventoryUpdate();
 		return true;
 	}
 	
-	UE_LOG(X_Inventory, Log, TEXT("%s: Can't add %i \"%s\" item(s)!"), *GetOwner()->GetName(), Slot.Quantity, *Slot.Item->GetItemName().ToString())
+	UE_LOG(X_Inventory, Log, TEXT("%s: Can't add \"%s\" item!"), *GetOwner()->GetName(), *Slot.Item->GetItemName().ToString())
 	return false;
 }
 

@@ -14,14 +14,14 @@
 #include "UserInterface/Inventory/DA_InventoryGridWidget.h"
 #include "UserInterface/Inventory/DA_InventorySlot_DragDropOperation.h"
 
-void UDA_InventorySlotWidget::SetData(const FDA_InventorySlot& InSlotData, const float InSize)
+void UDA_InventorySlotWidget::InitializeSlot(const FDA_InventorySlot& InSlotData, const float InSize)
 {
-	Super::SetData(InSlotData, InSize);
+	Super::InitializeSlot(InSlotData, InSize);
 
 	ENSURE_KISMET(TooltipClass)
 	if (UDA_InventorySlotTooltip* Widget = CreateWidget<UDA_InventorySlotTooltip>(GetOwningPlayer(), TooltipClass))
 	{
-		Widget->SetData(SlotData);
+		Widget->InitializeTooltip(SlotData);
 		SetToolTip(Widget);
 	}
 }
@@ -35,14 +35,14 @@ void UDA_InventorySlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, 
 	ENSURE_KISMET(DraggedSlotWidgetClass)
 	if (UDA_InventoryDraggedSlotWidget* DraggedWidget = CreateWidget<UDA_InventoryDraggedSlotWidget>(GetOwningPlayer(), DraggedSlotWidgetClass))
 	{
-		DraggedWidget->SetData(SlotData, SlotData.Item->GetOwnerInventory()->GetCellSize());
+		DraggedWidget->InitializeSlot(SlotData, SlotData.Item->GetOwnerInventory()->GetCellSize());
 
 		if (UDA_InventorySlot_DragDropOperation* DragDropOperation = NewObject<UDA_InventorySlot_DragDropOperation>(this))
 		{
 			DragDropOperation->Payload = this;
 			DragDropOperation->DefaultDragVisual = DraggedWidget;
 
-			Grid->ChangeSlotsLayer(-1);
+			OnBeginDrag.Execute();
 			
 			OutOperation = DragDropOperation;
 		}
@@ -53,8 +53,8 @@ void UDA_InventorySlotWidget::NativeOnDragCancelled(const FDragDropEvent& InDrag
 {
 	Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
 
-	UE_LOG(X_Inventory, Verbose, TEXT("%s: Drag&Drop was canceled"), *SlotData.Item->GetOwnerInventory()->GetOwner()->GetName())
-	Grid->ChangeSlotsLayer(1);
+	UE_LOG(X_Inventory, Verbose, TEXT("%s: Drag&Drop operation was canceled"), *SlotData.Item->GetOwnerInventory()->GetOwner()->GetName())
+	OnEndDrag.Execute();
 }
 
 bool UDA_InventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
@@ -62,8 +62,6 @@ bool UDA_InventorySlotWidget::NativeOnDrop(const FGeometry& InGeometry, const FD
 	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 
 	UE_LOG(X_Inventory, Verbose, TEXT("%s: Drag&Drop operation has ended"), *SlotData.Item->GetOwnerInventory()->GetOwner()->GetName())
-	Grid->ChangeSlotsLayer(1);
-	
 	return true;
 }
 
