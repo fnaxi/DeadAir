@@ -20,6 +20,8 @@ void UDA_InventoryCellWidget::InitializeCell(const FIntPoint& InCoordinates, UDA
 	check(Grid.IsValid());
 
 	CoordinatesText->SetText(FText::FromString(FString::Printf(TEXT("(%i;%i)"), Coordinates.X, Coordinates.Y)));
+
+	constexpr bool bUseDebugCoordinates = false;
 	if (!bUseDebugCoordinates)
 	{
 		CoordinatesText->SetVisibility(ESlateVisibility::Hidden);

@@ -40,7 +40,10 @@ protected:
 	TObjectPtr<UInputAction> MoveAction;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Input")
-	TObjectPtr<UInputAction> LookAction;
+	TObjectPtr<UInputAction> MouseLookAction;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> StickLookAction;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> JumpAction;
@@ -57,5 +60,7 @@ public:
 	
 private:
 	void Move(const FInputActionValue& InputValue);
-	void Look(const FInputActionValue& InputValue);
+	
+	void LookWithMouse(const FInputActionValue& InputValue);
+	void LookWithStick(const FInputActionValue& InputValue);
 };

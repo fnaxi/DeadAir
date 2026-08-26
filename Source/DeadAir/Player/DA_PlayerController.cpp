@@ -8,6 +8,7 @@
 #include "DA_GameplayTags.h"
 #include "EnhancedInputSubsystems.h"
 #include "DA_MiscUtils.h"
+#include "EnhancedInputComponent.h"
 
 void ADA_PlayerController::BeginPlay()
 {
@@ -22,29 +23,29 @@ void ADA_PlayerController::BeginPlay()
 			Subsystem->AddMappingContext(MappingContext, 0);
 		}
 	}
-
-	ENSURE_KISMET(InventoryWidgetClass)
-	UCommonUIExtensions::PushContentToLayer_ForPlayer(GetLocalPlayer(), DeadAirGameplayTags::Layer_GameMenu, InventoryWidgetClass);
-
-	SetUIMode(true);
 }
 
-void ADA_PlayerController::SetUIMode(bool bUIMode)
+void ADA_PlayerController::SetupInputComponent()
 {
-	bShowMouseCursor = bUIMode;
+	Super::SetupInputComponent();
 
-	ResetIgnoreLookInput();
-	ResetIgnoreMoveInput();
-
-	if (bUIMode)
+	if (UEnhancedInputComponent* EnhancedInput = CastChecked<UEnhancedInputComponent>(InputComponent))
 	{
-		SetInputMode(FInputModeGameAndUI());
-		UE_LOG(LogPlayerController, Log, TEXT("Input mode set to GameAndUI"))
+		EnhancedInput->BindAction(InventoryAction, ETriggerEvent::Started, this, &ADA_PlayerController::ToggleInventory);
+	}
+}
+
+void ADA_PlayerController::ToggleInventory()
+{
+	if (InventoryWidget.IsValid())
+	{
+		UCommonUIExtensions::PopContentFromLayer(InventoryWidget.Get());
+		InventoryWidget.Reset();
 	}
 	else
 	{
-		SetInputMode(FInputModeGameOnly());
-		UE_LOG(LogPlayerController, Log, TEXT("Input mode set to GameOnly"))
+		ENSURE_KISMET(InventoryWidgetClass)
+		InventoryWidget = UCommonUIExtensions::PushContentToLayer_ForPlayer(GetLocalPlayer(), DeadAirGameplayTags::Layer_GameMenu, InventoryWidgetClass);
 	}
 }
 

@@ -84,7 +84,9 @@ void ADA_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	if (UEnhancedInputComponent* EnhancedInput = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
-		EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::Look);
+		
+		EnhancedInput->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &ThisClass::LookWithMouse);
+		EnhancedInput->BindAction(StickLookAction, ETriggerEvent::Triggered, this, &ThisClass::LookWithStick);
 
 		EnhancedInput->BindAction(JumpAction, ETriggerEvent::Started, this, &Super::Jump);
 		EnhancedInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &Super::StopJumping);
@@ -101,13 +103,23 @@ void ADA_Character::Move(const FInputActionValue& InputValue)
 	}
 }
 
-void ADA_Character::Look(const FInputActionValue& InputValue)
+void ADA_Character::LookWithMouse(const FInputActionValue& InputValue)
 {
 	const FVector2D LookInput = InputValue.Get<FVector2D>();
 	if (GetController())
 	{
 		AddControllerPitchInput(LookInput.Y * 0.25);
 		AddControllerYawInput(LookInput.X * 0.25);
+	}
+}
+
+void ADA_Character::LookWithStick(const FInputActionValue& InputValue)
+{
+	const FVector2D LookInput = InputValue.Get<FVector2D>();
+	if (GetController())
+	{
+		AddControllerPitchInput(LookInput.Y * 0.8f);
+		AddControllerYawInput(LookInput.X * 0.8f);
 	}
 }
 

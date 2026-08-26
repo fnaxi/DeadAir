@@ -52,9 +52,6 @@ private:
 	UPROPERTY()
 	TWeakObjectPtr<UDA_InventoryGridWidget> Grid;
 	
-	UPROPERTY(Config)
-	bool bUseDebugCoordinates;
-	
 	/** Current cell coordinates in the grid. */
 	FIntPoint Coordinates;
 
