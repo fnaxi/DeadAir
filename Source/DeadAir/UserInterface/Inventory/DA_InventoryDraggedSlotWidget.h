@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class DEADAIR_API UDA_InventoryDraggedSlotWidget : public UDA_InventorySlotWidgetBase
 {
 	GENERATED_BODY()

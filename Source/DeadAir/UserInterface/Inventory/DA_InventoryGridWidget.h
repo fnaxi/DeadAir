@@ -13,7 +13,7 @@ class UDA_InventorySlotWidget;
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class DEADAIR_API UDA_InventoryGridWidget : public UUserWidget
 {
 	GENERATED_BODY()

@@ -11,7 +11,7 @@ struct FDA_InventorySlot;
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class DEADAIR_API UDA_InventorySlotTooltip : public UUserWidget
 {
 	GENERATED_BODY()

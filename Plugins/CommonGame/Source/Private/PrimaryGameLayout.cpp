@@ -120,7 +120,7 @@ void UPrimaryGameLayout::OnWidgetStackTransitioning(UCommonActivatableWidgetCont
 void UPrimaryGameLayout::FindAndRemoveWidgetFromLayer(UCommonActivatableWidget* ActivatableWidget)
 {
 	// We're not sure what layer the widget is on so go searching.
-	for (const auto& LayerKVP : Layers)
+	for (const TPair<FGameplayTag, TObjectPtr<UCommonActivatableWidgetContainerBase>>& LayerKVP : Layers)
 	{
 		LayerKVP.Value->RemoveWidget(*ActivatableWidget);
 	}

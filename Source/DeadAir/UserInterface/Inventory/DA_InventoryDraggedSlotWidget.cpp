@@ -5,7 +5,7 @@
 
 /*void UDA_InventoryDraggedSlotWidget::SetData(const FDA_InventorySlot& InData, const float InCellSize)
 {
-	// todo: Fix crash here or remove. we don't need rotation anyway
+	//@TODO: Fix crash here or remove. we don't need rotation anyway
 	/*if (!SlotData.Item->OnItemRotated.IsBoundToObject(this))
 	{
 		SlotData.Item->OnItemRotated.AddUObject(this, &ThisClass::OnItemRotated);

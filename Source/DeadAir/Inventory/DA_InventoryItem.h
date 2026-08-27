@@ -6,7 +6,7 @@
 #include "DA_InventoryComponent.h"
 #include "DA_InventoryItem.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FDA_OnItemRotatedSignature) // todo: Remove rotation
+DECLARE_MULTICAST_DELEGATE(FDA_OnItemRotatedSignature) //@TODO: Remove rotation
 
 /**
  * 

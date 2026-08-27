@@ -71,7 +71,7 @@ public:
 	 */
 	FIntPoint GetFreeCellThatFitsItem(TArray<FIntPoint> const& SizeInCells);
 
-	// todo: FindItemAtCoordinates
+	//@TODO: FindItemAtCoordinates
 
 	/**
 	 * Adds an item instance to the inventory.
@@ -110,7 +110,7 @@ public:
 	bool MoveItem(const FDA_InventorySlot& InSlot, const FIntPoint& Destination);
 
 	/** Notifies all listeners that the inventory has been updated. */
-	void HandleInventoryUpdate();
+	void NotifyInventoryUpdated();
 
 	FORCEINLINE TArray<FIntPoint> GetCells() const { return Cells; }
 	FORCEINLINE TArray<FDA_InventorySlot> GetSlots() const { return Slots; }

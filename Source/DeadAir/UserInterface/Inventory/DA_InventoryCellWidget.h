@@ -11,7 +11,7 @@ class UDA_InventoryGridWidget;
 /**
  * 
  */
-UCLASS(Config = Game)
+UCLASS(Abstract)
 class DEADAIR_API UDA_InventoryCellWidget : public UUserWidget
 {
 	GENERATED_BODY()

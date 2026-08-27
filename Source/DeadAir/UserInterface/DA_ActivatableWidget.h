@@ -16,7 +16,9 @@ enum class EDA_WidgetInputMode : uint8
 	Menu
 };
 
-// An activatable widget that automatically drives the desired input config when activated
+/**
+ * An activatable widget that automatically drives the desired input config when activated
+ */
 UCLASS(Abstract, Blueprintable)
 class UDA_ActivatableWidget : public UCommonActivatableWidget
 {

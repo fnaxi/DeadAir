@@ -34,5 +34,5 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="General")
 	TSubclassOf<class UDA_InventoryItem> ItemClass;
 
-	// TODO: Fragments
+	//@TODO: Fragments
 };

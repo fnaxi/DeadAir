@@ -24,7 +24,7 @@ struct FDA_InventorySlot
 		Quantity = Other.Quantity;
 	}*/
 
-	// TODO: Move Quantity into UDA_InventoryItem
+	//@TODO: Move Quantity into UDA_InventoryItem
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UDA_InventoryItem> Item;

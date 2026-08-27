@@ -9,13 +9,13 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class DEADAIR_API ADA_PlayerController : public ACommonPlayerController
 {
 	GENERATED_BODY()
 
 public:
-	void ToggleInventory();
+	void OpenInventory();
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
@@ -24,13 +24,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<class UInputAction> InventoryAction;
 	
-	UPROPERTY(EditDefaultsOnly, Category="UserInterface")
-	TSubclassOf<class UDA_InventoryWidget> InventoryWidgetClass;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UDA_GameplayAbility_OpenInventory> ToggleInventoryAbilityClass;
 	
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
-	
-private:
-	UPROPERTY()
-	TWeakObjectPtr<class UCommonActivatableWidget> InventoryWidget;
 };

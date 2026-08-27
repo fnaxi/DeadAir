@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "DA_Character.generated.h"
 
@@ -12,8 +13,8 @@ class UInputAction;
 /**
  * 
  */
-UCLASS()
-class DEADAIR_API ADA_Character : public ACharacter
+UCLASS(Abstract)
+class DEADAIR_API ADA_Character : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -25,17 +26,24 @@ public:
 	void XAddInventoryItem(const FString& ItemName);
 
 	virtual void PostInitializeComponents() override;
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
-	TObjectPtr<class UDA_InventoryComponent> Inventory;
-
 	UPROPERTY(VisibleAnywhere, Category="Components")
 	TObjectPtr<class UCameraComponent> Camera;
 
 	UPROPERTY(VisibleAnywhere, Category="Components")
 	TObjectPtr<USkeletalMeshComponent> Hand;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	TObjectPtr<class UDA_InventoryComponent> InventoryComponent;
+	
+	UPROPERTY(VisibleAnywhere, Category="Components")
+	TObjectPtr<class UDA_AbilitySystemComponent> AbilitySystemComponent;
 
+	UPROPERTY(EditDefaultsOnly, Category="Abilities")
+	TObjectPtr<class UDA_AbilitySet> AbilitySet;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> MoveAction;
 	

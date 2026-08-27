@@ -33,12 +33,12 @@ public class DeadAir : ModuleRules
 			
 			"GameplayAbilities",
 			"GameplayTags",
+			"GameplayTasks",
 			
 			"HeadMountedDisplay",
 			"UMG",
 			"CommonUI"
 		]);
-
 		PrivateDependencyModuleNames.AddRange(
 		[
 			// ...

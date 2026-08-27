@@ -108,12 +108,12 @@ FIntPoint UDA_InventoryComponent::GetFreeCellThatFitsItem(TArray<FIntPoint> cons
 
 bool UDA_InventoryComponent::AddItem(const FDA_InventorySlot& Slot)
 {
-	if (AreCoordinatesValid(Slot.Item->GetStartCoordinates())) // todo: check that cell is free
+	if (AreCoordinatesValid(Slot.Item->GetStartCoordinates())) //@TODO: check that cell is free
 	{
 		Slots.Add(Slot);
 		UE_LOG(X_Inventory, Verbose, TEXT("%s: Added \"%s\" item"), *GetOwner()->GetName(), *Slot.Item->GetItemName().ToString())
 	
-		HandleInventoryUpdate();
+		NotifyInventoryUpdated();
 		return true;
 	}
 	
@@ -152,7 +152,7 @@ bool UDA_InventoryComponent::MoveItem(const FDA_InventorySlot& InSlot, const FIn
 			Slot.Item->SetStartCoordinates(Destination);
 			UE_LOG(X_Inventory, Log, TEXT("%s: Moved \"%s\" item to %s coordinates"), *GetOwner()->GetName(), *Slot.Item->GetItemName().ToString(), *Destination.ToString())
 			
-			HandleInventoryUpdate();
+			NotifyInventoryUpdated();
 			return true;
 		}
 	}
@@ -175,7 +175,7 @@ UDA_InventoryItem* UDA_InventoryComponent::CreateItem(UDA_InventoryItemDefinitio
 	return Item;
 }
 
-void UDA_InventoryComponent::HandleInventoryUpdate()
+void UDA_InventoryComponent::NotifyInventoryUpdated()
 {
 	OnInventoryUpdated.Broadcast();
 	UE_LOG(X_Inventory, Verbose, TEXT("%s: Inventory was updated"), *GetOwner()->GetName())

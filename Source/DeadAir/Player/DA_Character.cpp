@@ -1,11 +1,15 @@
 // CopyRight © Dead Air Game. All Rights Reserved.
 
 
-#include "Character/DA_Character.h"
+#include "Player/DA_Character.h"
 
+#include "AbilitySystemComponent.h"
 #include "DA_LogChannels.h"
+#include "DA_MiscUtils.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
+#include "AbilitySystem/DA_AbilitySet.h"
+#include "AbilitySystem/DA_AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/AssetManager.h"
 #include "Inventory/DA_InventoryComponent.h"
@@ -23,12 +27,13 @@ ADA_Character::ADA_Character()
 	Hand = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand"));
 	Hand->SetupAttachment(Camera);
 	
-	Inventory = CreateDefaultSubobject<UDA_InventoryComponent>(TEXT("InventoryComponent"));
+	InventoryComponent = CreateDefaultSubobject<UDA_InventoryComponent>(TEXT("Inventory"));
+	AbilitySystemComponent = CreateDefaultSubobject<UDA_AbilitySystemComponent>(TEXT("AbilitySystem"));
 }
 
 void ADA_Character::XAddInventoryItem(const FString& ItemName)
 {
-	const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+	const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
 	const IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
 
 	FARFilter Filter;
@@ -54,20 +59,30 @@ void ADA_Character::XAddInventoryItem(const FString& ItemName)
 		return;
 	}
 
-	Inventory->AddNewItem(ItemDefinition);
+	InventoryComponent->AddNewItem(ItemDefinition);
 }
 
 void ADA_Character::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	Inventory->Initialize();
+	InventoryComponent->Initialize();
+}
+
+UAbilitySystemComponent* ADA_Character::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent.Get();
 }
 
 // Called when the game starts or when spawned
 void ADA_Character::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AbilitySystemComponent->InitAbilityActorInfo(GetLocalViewingPlayerController(), this); //@TODO: Character?
+
+	ENSURE_KISMET(AbilitySet)
+	AbilitySet->GiveToAbilitySystem(AbilitySystemComponent.Get(), nullptr);
 }
 
 // Called every frame

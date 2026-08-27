@@ -3,7 +3,7 @@
 
 #include "DA_GameMode.h"
 
-#include "Character/DA_Character.h"
+#include "Player/DA_Character.h"
 #include "Player/DA_PlayerController.h"
 
 ADA_GameMode::ADA_GameMode()

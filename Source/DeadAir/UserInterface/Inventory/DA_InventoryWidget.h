@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class DEADAIR_API UDA_InventoryWidget : public UDA_ActivatableWidget
 {
 	GENERATED_BODY()

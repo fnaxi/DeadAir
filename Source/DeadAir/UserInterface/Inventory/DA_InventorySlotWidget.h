@@ -11,7 +11,7 @@ DECLARE_DELEGATE(FDA_OnSlotDragSignature)
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class DEADAIR_API UDA_InventorySlotWidget : public UDA_InventorySlotWidgetBase
 {
 	GENERATED_BODY()
