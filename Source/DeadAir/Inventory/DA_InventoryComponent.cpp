@@ -5,6 +5,8 @@
 
 #include "DA_InventoryItemDefinition.h"
 #include "DA_LogChannels.h"
+#include "AssetRegistry/AssetRegistryModule.h"
+#include "AssetRegistry/IAssetRegistry.h"
 #include "Inventory/DA_InventoryItem.h"
 
 // Sets default values
@@ -119,6 +121,37 @@ bool UDA_InventoryComponent::AddItem(const FDA_InventorySlot& Slot)
 	
 	UE_LOG(X_Inventory, Log, TEXT("%s: Can't add \"%s\" item!"), *GetOwner()->GetName(), *Slot.Item->GetItemName().ToString())
 	return false;
+}
+
+void UDA_InventoryComponent::AddNewItemByName(const FString& ItemName)
+{
+	const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+	const IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
+
+	FARFilter Filter;
+	Filter.ClassPaths.Add(UDA_InventoryItemDefinition::StaticClass()->GetClassPathName());
+	Filter.bRecursiveClasses = true;
+
+	TArray<FAssetData> FoundAssets;
+	AssetRegistry.GetAssets(Filter, FoundAssets);
+
+	UDA_InventoryItemDefinition* ItemDefinition = nullptr;
+	for (const FAssetData& AssetData : FoundAssets)
+	{
+		if (AssetData.AssetName.ToString() == ItemName)
+		{
+			ItemDefinition = Cast<UDA_InventoryItemDefinition>(AssetData.GetAsset());
+			break;
+		}
+	}
+
+	if (!IsValid(ItemDefinition))
+	{
+		UE_LOG(X_Inventory, Warning, TEXT("%s: Can't find item definition with name: %s!"), *GetName(), *ItemName);
+		return;
+	}
+
+	AddNewItem(ItemDefinition);
 }
 
 bool UDA_InventoryComponent::AddNewItem(UDA_InventoryItemDefinition* Definition, const int32 Quantity)

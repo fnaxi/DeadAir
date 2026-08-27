@@ -80,6 +80,12 @@ public:
 	 * @return True, if the item is added to the inventory. False otherwise.
 	 */
 	bool AddItem(const FDA_InventorySlot& Slot);
+
+	/**
+	 * Adds an item to the inventory using a name of the data asset.
+	 * @param ItemName Name of the data asset.
+	 */
+	void AddNewItemByName(const FString& ItemName);
 	
 	/**
 	 * Adds a new item instance to the inventory.

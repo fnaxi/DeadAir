@@ -23,7 +23,7 @@ public:
 	ADA_Character();
 
 	UFUNCTION(exec)
-	void XAddInventoryItem(const FString& ItemName);
+	void XAddInventoryItem(const FString& ItemName); //@TODO: Move to Cheat Manager
 
 	virtual void PostInitializeComponents() override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
