@@ -17,4 +17,12 @@ class DEADAIR_API UDA_InventoryWidget : public UDA_ActivatableWidget
 protected:
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<class UDA_InventoryGridWidget> Grid;
+
+	UPROPERTY(EditDefaultsOnly)
+	FDataTableRowHandle CloseInventoryInputAction;
+	
+	virtual void NativeOnInitialized() override;
+	
+private:
+	void CloseInventory();
 };

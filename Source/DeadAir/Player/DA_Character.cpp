@@ -5,12 +5,14 @@
 
 #include "AbilitySystemComponent.h"
 #include "DA_MiscUtils.h"
-#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "AbilitySystem/DA_AbilitySet.h"
 #include "AbilitySystem/DA_AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Input/DA_InputComponent.h"
 #include "Inventory/DA_InventoryComponent.h"
+#include "DA_GameplayTags.h"
 
 // Sets default values
 ADA_Character::ADA_Character()
@@ -56,6 +58,16 @@ void ADA_Character::BeginPlay()
 	AbilitySet->GiveToAbilitySystem(AbilitySystemComponent.Get(), nullptr);
 }
 
+void ADA_Character::Input_AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	AbilitySystemComponent->AbilityInputTagPressed(InputTag);
+}
+
+void ADA_Character::Input_AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	AbilitySystemComponent->AbilityInputTagReleased(InputTag);
+}
+
 // Called every frame
 void ADA_Character::Tick(float DeltaTime)
 {
@@ -66,46 +78,89 @@ void ADA_Character::Tick(float DeltaTime)
 void ADA_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	
+	const APlayerController* PlayerController = GetController<APlayerController>();
+	check(PlayerController);
 
-	if (UEnhancedInputComponent* EnhancedInput = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	const ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(PlayerController->GetLocalPlayer());
+	check(LocalPlayer);
+	
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check(Subsystem);
+
+	Subsystem->ClearAllMappings();
+	
+	UDA_InputComponent* DeadAirInputComponent = Cast<UDA_InputComponent>(PlayerInputComponent);
+	if (ensureMsgf(DeadAirInputComponent, TEXT("Unexpected Input Component class! The Gameplay Abilities will not be bound to their inputs. Change the input component to UDA_InputComponent or a subclass of it.")))
 	{
-		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
+		ENSURE_KISMET(InputConfig)
 		
-		EnhancedInput->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &ThisClass::LookWithMouse);
-		EnhancedInput->BindAction(StickLookAction, ETriggerEvent::Triggered, this, &ThisClass::LookWithStick);
+		// Add the key mappings that may have been set by the player
+		DeadAirInputComponent->AddInputMappings(InputConfig, Subsystem);
 
-		EnhancedInput->BindAction(JumpAction, ETriggerEvent::Started, this, &Super::Jump);
-		EnhancedInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &Super::StopJumping);
+		// This is where we actually bind and input action to a gameplay tag, which means that Gameplay Ability Blueprints will
+		// be triggered directly by these input actions Triggered events. 
+		TArray<uint32> BindHandles;
+		DeadAirInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+
+		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);
+		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
+		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Look_Stick, ETriggerEvent::Triggered, this, &ThisClass::Input_LookStick, false);
+
+		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Jump, ETriggerEvent::Started, this, &Super::Jump, false);
+		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Jump, ETriggerEvent::Completed, this, &Super::StopJumping, false);
 	}
 }
 
-void ADA_Character::Move(const FInputActionValue& InputValue)
+void ADA_Character::Input_Move(const FInputActionValue& InputValue)
 {
 	const FVector2D MoveInput = InputValue.Get<FVector2D>();
 	if (GetController())
 	{
-		AddMovementInput(GetActorForwardVector(), MoveInput.Y, false);
-		AddMovementInput(GetActorRightVector(), MoveInput.X, false);
+		if (MoveInput.X != 0.0f)
+		{
+			AddMovementInput(GetActorRightVector(), MoveInput.X, false);
+		}
+		
+		if (MoveInput.Y != 0.0f)
+		{
+			AddMovementInput(GetActorForwardVector(), MoveInput.Y, false);
+		}
 	}
 }
 
-void ADA_Character::LookWithMouse(const FInputActionValue& InputValue)
+void ADA_Character::Input_LookMouse(const FInputActionValue& InputValue)
 {
 	const FVector2D LookInput = InputValue.Get<FVector2D>();
-	if (GetController())
+	constexpr float LookSensitivity = 0.25f;
+	
+	if (LookInput.X != 0.0f)
 	{
-		AddControllerPitchInput(LookInput.Y * 0.25);
-		AddControllerYawInput(LookInput.X * 0.25);
+		AddControllerYawInput(LookInput.X * LookSensitivity);
+	}
+
+	if (LookInput.Y != 0.0f)
+	{
+		AddControllerPitchInput(LookInput.Y * LookSensitivity);
 	}
 }
 
-void ADA_Character::LookWithStick(const FInputActionValue& InputValue)
+void ADA_Character::Input_LookStick(const FInputActionValue& InputValue)
 {
 	const FVector2D LookInput = InputValue.Get<FVector2D>();
-	if (GetController())
+	constexpr float LookSensitivity = 0.8f;
+	
+	const UWorld* World = GetWorld();
+	check(World);
+		
+	if (LookInput.X != 0.0f)
 	{
-		AddControllerPitchInput(LookInput.Y * 0.8f);
-		AddControllerYawInput(LookInput.X * 0.8f);
+		AddControllerYawInput(LookInput.X * LookSensitivity * (World->GetDeltaSeconds() * 100.f));
+	}
+
+	if (LookInput.Y != 0.0f)
+	{
+		AddControllerPitchInput(LookInput.Y * LookSensitivity * (World->GetDeltaSeconds() * 100.f));
 	}
 }
 

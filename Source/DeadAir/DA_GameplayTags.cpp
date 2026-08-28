@@ -8,10 +8,16 @@
 
 namespace DeadAirGameplayTags
 {
-	UE_DEFINE_GAMEPLAY_TAG(Layer_Game,			"UI.Layer.Game");
-	UE_DEFINE_GAMEPLAY_TAG(Layer_GameMenu,		"UI.Layer.GameMenu");
-	UE_DEFINE_GAMEPLAY_TAG(Layer_Menu,			"UI.Layer.Menu");
-	UE_DEFINE_GAMEPLAY_TAG(Layer_Modal,			"UI.Layer.Modal");
+	UE_DEFINE_GAMEPLAY_TAG(Layer_Game,				"UI.Layer.Game");
+	UE_DEFINE_GAMEPLAY_TAG(Layer_GameMenu,			"UI.Layer.GameMenu");
+	UE_DEFINE_GAMEPLAY_TAG(Layer_Menu,				"UI.Layer.Menu");
+	UE_DEFINE_GAMEPLAY_TAG(Layer_Modal,				"UI.Layer.Modal");
+	
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Move,			"InputTag.Move");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Look_Mouse,		"InputTag.Look.Mouse");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Look_Stick,		"InputTag.Look.Stick");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Jump,			"InputTag.Jump");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Inventory,		"InputTag.Inventory");
 
 	FGameplayTag FindTagByString(const FString& TagString, bool bMatchPartialString)
 	{

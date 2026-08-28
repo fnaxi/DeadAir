@@ -15,18 +15,13 @@ class DEADAIR_API ADA_PlayerController : public ACommonPlayerController
 	GENERATED_BODY()
 
 public:
-	void OpenInventory();
+	UFUNCTION(BlueprintCallable, Category = PlayerController)
+	class UDA_AbilitySystemComponent* GetDeadAirAbilitySystemComponent() const;
+	
+	//~APlayerController interface
+	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
+	//~End of APlayerController interface
 	
 protected:
-	UPROPERTY(EditDefaultsOnly, Category="Input")
-	TObjectPtr<class UInputMappingContext> MappingContext;
-
-	UPROPERTY(EditDefaultsOnly, Category="Input")
-	TObjectPtr<class UInputAction> InventoryAction;
-	
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class UDA_GameplayAbility_OpenInventory> ToggleInventoryAbilityClass;
-	
 	virtual void BeginPlay() override;
-	virtual void SetupInputComponent() override;
 };

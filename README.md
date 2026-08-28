@@ -105,9 +105,9 @@ Also, project uses content such as models, animations and sounds from [Dead Air]
 
 These [Fab](https://www.fab.com) assets are used:
 
-- [Ballistics FX](https://www.fab.com/listings/5a08c83d-deb0-4989-baaa-79b68e340e24)
+- [Input Promts Pack](https://www.fab.com/listings/7a115c57-73bd-4108-a34c-bb5ec4ac9782) ([itch.io](https://juliocacko.itch.io/free-input-prompts))
 
-Project uses modified version of tonemapper shader from [Hidden Empire](https://www.patreon.com/cw/HiddenEmpireGame?vanity=HiddenEmpireGame).
+- [Ballistics FX](https://www.fab.com/listings/5a08c83d-deb0-4989-baaa-79b68e340e24)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
