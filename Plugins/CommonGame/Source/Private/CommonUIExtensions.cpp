@@ -66,10 +66,7 @@ UCommonActivatableWidget* UCommonUIExtensions::PushContentToLayer_ForPlayer(cons
 		{
 			if (UPrimaryGameLayout* RootLayout = Policy->GetRootLayout(CastChecked<UCommonLocalPlayer>(LocalPlayer)))
 			{
-				UCommonActivatableWidget* Widget = RootLayout->PushWidgetToLayerStack(LayerName, WidgetClass);
-
-				UE_LOG(LogCommonGame, Verbose, TEXT("Pushed %s widget to %s layer stack"), *Widget->GetName(), *LayerName.ToString())
-				return Widget;
+				return RootLayout->PushWidgetToLayerStack(LayerName, WidgetClass);
 			}
 		}
 	}
@@ -92,8 +89,6 @@ void UCommonUIExtensions::PushStreamedContentToLayer_ForPlayer(const ULocalPlaye
 			{
 				const bool bSuspendInputUntilComplete = true;
 				RootLayout->PushWidgetToLayerStackAsync(LayerName, bSuspendInputUntilComplete, WidgetClass);
-
-				UE_LOG(LogCommonGame, Verbose, TEXT("Pushed %s widget to %s layer stack"), *WidgetClass->GetName(), *LayerName.ToString())
 			}
 		}
 	}
@@ -116,8 +111,6 @@ void UCommonUIExtensions::PopContentFromLayer(UCommonActivatableWidget* Activata
 				if (UPrimaryGameLayout* RootLayout = Policy->GetRootLayout(CastChecked<UCommonLocalPlayer>(LocalPlayer)))
 				{
 					RootLayout->FindAndRemoveWidgetFromLayer(ActivatableWidget);
-
-					UE_LOG(LogCommonGame, Verbose, TEXT("Popped %s widget from %s layer"), *ActivatableWidget->GetName(), *ActivatableWidget->GetParent()->GetName())
 				}
 			}
 		}
