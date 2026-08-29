@@ -4,6 +4,7 @@
 #include "UserInterface/Inventory/DA_InventoryWidget.h"
 
 #include "DA_InventoryGridWidget.h"
+#include "DA_InventorySlotWidget.h"
 #include "DA_MiscUtils.h"
 #include "Input/CommonUIInputTypes.h"
 

@@ -16,11 +16,18 @@ class DEADAIR_API UDA_GameplayAbility_OpenInventory : public UDA_GameplayAbility
 
 public:
 	UDA_GameplayAbility_OpenInventory();
-	
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UDA_InventoryWidget> InventoryWidgetClass;
-	
+
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	                             const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+private:
+	UPROPERTY()
+	TObjectPtr<class UCommonActivatableWidget> InventoryWidget;
+
+	UFUNCTION()
+	void OnInventoryWidgetClosed();
 };
