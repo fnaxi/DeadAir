@@ -5,6 +5,12 @@
 
 #include "AbilitySystem/DA_AbilitySystemComponent.h"
 #include "Player/DA_Character.h"
+#include "System/DA_CheatManager.h"
+
+ADA_PlayerController::ADA_PlayerController()
+{
+	CheatClass = UDA_CheatManager::StaticClass();
+}
 
 UDA_AbilitySystemComponent* ADA_PlayerController::GetDeadAirAbilitySystemComponent() const
 {

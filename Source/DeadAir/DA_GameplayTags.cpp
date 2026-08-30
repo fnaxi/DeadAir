@@ -17,6 +17,7 @@ namespace DeadAirGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Look_Mouse,		"InputTag.Look.Mouse");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Look_Stick,		"InputTag.Look.Stick");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Jump,			"InputTag.Jump");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Crouch,			"InputTag.Crouch");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Inventory,		"InputTag.Inventory");
 
 	FGameplayTag FindTagByString(const FString& TagString, bool bMatchPartialString)

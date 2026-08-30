@@ -98,9 +98,9 @@ void UDA_AbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGame
 				}
 				else
 				{
-					const UDA_GameplayAbility* LyraAbilityCDO = Cast<UDA_GameplayAbility>(AbilitySpec->Ability);
+					const UDA_GameplayAbility* AbilityCDO = Cast<UDA_GameplayAbility>(AbilitySpec->Ability);
 
-					if (LyraAbilityCDO && LyraAbilityCDO->GetActivationPolicy() == EDA_AbilityActivationPolicy::OnInputTriggered)
+					if (AbilityCDO && AbilityCDO->GetActivationPolicy() == EDA_AbilityActivationPolicy::OnInputTriggered)
 					{
 						AbilitiesToActivate.AddUnique(AbilitySpec->Handle);
 					}

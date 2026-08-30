@@ -13,6 +13,7 @@
 #include "Input/DA_InputComponent.h"
 #include "Inventory/DA_InventoryComponent.h"
 #include "DA_GameplayTags.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ADA_Character::ADA_Character()
@@ -21,18 +22,13 @@ ADA_Character::ADA_Character()
 	PrimaryActorTick.bCanEverTick = false;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	Camera->SetupAttachment(GetMesh());
+	Camera->SetupAttachment(GetRootComponent());
 
 	Hand = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Hand"));
 	Hand->SetupAttachment(Camera);
 	
 	InventoryComponent = CreateDefaultSubobject<UDA_InventoryComponent>(TEXT("Inventory"));
 	AbilitySystemComponent = CreateDefaultSubobject<UDA_AbilitySystemComponent>(TEXT("AbilitySystem"));
-}
-
-void ADA_Character::XAddInventoryItem(const FString& ItemName)
-{
-	InventoryComponent->AddNewItemByName(ItemName);
 }
 
 void ADA_Character::PostInitializeComponents()
@@ -52,7 +48,7 @@ void ADA_Character::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AbilitySystemComponent->InitAbilityActorInfo(GetLocalViewingPlayerController(), this); //@TODO: Character?
+	AbilitySystemComponent->InitAbilityActorInfo(GetLocalViewingPlayerController(), this);
 
 	ENSURE_KISMET(AbilitySet)
 	AbilitySet->GiveToAbilitySystem(AbilitySystemComponent.Get(), nullptr);
@@ -106,9 +102,8 @@ void ADA_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);
 		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
 		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Look_Stick, ETriggerEvent::Triggered, this, &ThisClass::Input_LookStick, false);
-
 		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Jump, ETriggerEvent::Started, this, &Super::Jump, false);
-		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Jump, ETriggerEvent::Completed, this, &Super::StopJumping, false);
+		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Crouch, ETriggerEvent::Started, this, &ThisClass::Input_Crouch, false);
 	}
 }
 
@@ -160,7 +155,20 @@ void ADA_Character::Input_LookStick(const FInputActionValue& InputValue)
 
 	if (LookInput.Y != 0.0f)
 	{
-		AddControllerPitchInput(LookInput.Y * LookSensitivity * (World->GetDeltaSeconds() * 100.f));
+		AddControllerPitchInput(LookInput.Y * LookSensitivity * (World->GetDeltaSeconds() * 50.f));
+	}
+}
+
+void ADA_Character::Input_Crouch(const FInputActionValue& InputActionValue)
+{
+	const UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	if (IsCrouched() || MovementComponent->bWantsToCrouch)
+	{
+		UnCrouch();
+	}
+	else if (MovementComponent->IsMovingOnGround())
+	{
+		Crouch();
 	}
 }
 

@@ -15,6 +15,8 @@ class DEADAIR_API ADA_PlayerController : public ACommonPlayerController
 	GENERATED_BODY()
 
 public:
+	ADA_PlayerController();
+	
 	UFUNCTION(BlueprintCallable, Category = PlayerController)
 	class UDA_AbilitySystemComponent* GetDeadAirAbilitySystemComponent() const;
 	
