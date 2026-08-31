@@ -4,21 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "CommonUserWidget.h"
-#include "Inventory/DA_InventoryTypes.h"
-#include "DA_InventorySlotWidgetBase.generated.h"
+#include "DA_InventoryItemWidgetBase.generated.h"
 
 /**
  * 
  */
 UCLASS(Abstract)
-class DEADAIR_API UDA_InventorySlotWidgetBase : public UCommonUserWidget
+class DEADAIR_API UDA_InventoryItemWidgetBase : public UCommonUserWidget
 {
 	GENERATED_BODY()
 
 public:
-	virtual void InitializeSlot(const FDA_InventorySlot& InSlotData, const float InSize);
+	virtual void InitializeSlot(class UDA_InventoryItem* InItem, const float InSize);
 
-	FORCEINLINE	FDA_InventorySlot GetSlotData() const { return SlotData; }
+	FORCEINLINE	UDA_InventoryItem* GetItem() const { return Item; }
 	
 protected:
 	UPROPERTY(meta=(BindWidget))
@@ -28,7 +27,7 @@ protected:
 	TObjectPtr<class UImage> Icon;
 	
 	UPROPERTY()
-	FDA_InventorySlot SlotData;
+	TObjectPtr<UDA_InventoryItem> Item;
 
 	void SetSlotSize(float Size) const;
 	void ChangeIcon(const FIntPoint& Coordinates, const FIntPoint& Size);

@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/DragDropOperation.h"
-#include "DA_InventorySlot_DragDropOperation.generated.h"
+#include "DA_InventoryItem_DragDropOperation.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DEADAIR_API UDA_InventorySlot_DragDropOperation : public UDragDropOperation
+class DEADAIR_API UDA_InventoryItem_DragDropOperation : public UDragDropOperation
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values
-	UDA_InventorySlot_DragDropOperation()
+	UDA_InventoryItem_DragDropOperation()
 	{
 		Pivot = EDragPivot::CenterCenter;
 	}

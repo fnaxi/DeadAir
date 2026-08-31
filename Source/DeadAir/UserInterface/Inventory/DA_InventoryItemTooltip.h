@@ -4,20 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "DA_InventorySlotTooltip.generated.h"
-
-struct FDA_InventorySlot;
+#include "DA_InventoryItemTooltip.generated.h"
 
 /**
  * 
  */
 UCLASS(Abstract)
-class DEADAIR_API UDA_InventorySlotTooltip : public UUserWidget
+class DEADAIR_API UDA_InventoryItemTooltip : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
-	void InitializeTooltip(const FDA_InventorySlot& InSlot);
+	void InitializeTooltip(const class UDA_InventoryItem* InItem);
 	
 protected:
 	UPROPERTY(meta=(BindWidget))

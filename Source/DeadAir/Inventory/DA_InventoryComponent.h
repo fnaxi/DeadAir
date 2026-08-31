@@ -3,9 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DA_InventoryTypes.h"
 #include "Components/ActorComponent.h"
 #include "DA_InventoryComponent.generated.h"
+
+class UDA_InventoryItem;
+class UDA_InventoryItemDefinition;
+
+DECLARE_MULTICAST_DELEGATE(FDA_OnInventoryUpdatedSignature)
 
 /**
  * 
@@ -21,9 +25,6 @@ public:
 
 	/** Called when inventory changes (item added, removed, moved, etc.). */
 	FDA_OnInventoryUpdatedSignature OnInventoryUpdated;
-
-	/** Called when inventory and its widgets are fully initialized. */
-	FDA_OnInventoryUpdatedSignature OnInventoryInitialized;
 
 	/** Initializes inventory cells basing on grid size. */
 	void Initialize();
@@ -76,16 +77,16 @@ public:
 	/**
 	 * Adds an item instance to the inventory.
 	 *
-	 * @param	Slot			Slot to add to the inventory.
+	 * @param	Item			Item to add to the inventory.
 	 * @return True, if the item is added to the inventory. False otherwise.
 	 */
-	bool AddItem(const FDA_InventorySlot& Slot);
+	bool AddItem(UDA_InventoryItem* Item);
 
 	/**
 	 * Adds an item to the inventory using a name of the data asset.
-	 * @param ItemName Name of the data asset.
+	 * @param	ItemName		Name of the data asset.
 	 */
-	void AddNewItemByName(const FString& ItemName);
+	void AddNewItemByName(const FString& ItemName); //@TODO: Quantity
 	
 	/**
 	 * Adds a new item instance to the inventory.
@@ -95,31 +96,31 @@ public:
 	 * @return True, if the item is added to the inventory. False otherwise.
 	 */
 	UFUNCTION(BlueprintCallable)
-	bool AddNewItem(class UDA_InventoryItemDefinition* Definition, int32 Quantity = 1);
+	bool AddNewItem(UDA_InventoryItemDefinition* Definition, int32 Quantity = 1);
 	
 	/**
 	 * Removes an existing item instance from the inventory.
 	 *
-	 * @param	Slot			Item UniqueId we are trying to remove.
+	 * @param	Item			Item UniqueId we are trying to remove.
 	 * @return True, if the item is removed from the inventory. False otherwise.
 	 */
 	UFUNCTION(BlueprintCallable)
-	bool RemoveItem(const FDA_InventorySlot& Slot);
+	bool RemoveItem(UDA_InventoryItem* Item);
 	
 	/**
 	 * Moves an existing item from to the specified grid coordinates.
 	 *
-	 * @param	InSlot			Source slot data.
+	 * @param	InItem			Source slot data.
 	 * @param	Destination		Destination grid cell coordinates.
 	 * @return True, if the item can be moved to destination. False otherwise.
 	 */
-	bool MoveItem(const FDA_InventorySlot& InSlot, const FIntPoint& Destination);
+	bool MoveItem(const UDA_InventoryItem* InItem, const FIntPoint& Destination);
 
 	/** Notifies all listeners that the inventory has been updated. */
 	void NotifyInventoryUpdated();
 
 	FORCEINLINE TArray<FIntPoint> GetCells() const { return Cells; }
-	FORCEINLINE TArray<FDA_InventorySlot> GetSlots() const { return Slots; }
+	FORCEINLINE TArray<UDA_InventoryItem*> GetItems() const { return Items; }
 
 	FORCEINLINE FIntPoint GetGridSize() const { return GridSize; }
 	FORCEINLINE float GetCellSize() const { return CellSize; }
@@ -140,15 +141,14 @@ private:
 	/** Holds all grid cells coordinates. */
 	TArray<FIntPoint> Cells;
 	
-	/** Holds our stored items and their grid coordinates. */
+	/** Holds stored items and their grid coordinates. */
 	UPROPERTY()
-	TArray<FDA_InventorySlot> Slots;
+	TArray< TObjectPtr<UDA_InventoryItem> > Items;
 	
 	/**
 	 * Creates an item instance from the specified item class.
 	 *
 	 * @param	Definition		Data asset of the item.
-	 * @return a UItem instance of the specified class. nullptr otherwise.
 	 */
 	UDA_InventoryItem* CreateItem(UDA_InventoryItemDefinition* Definition);
 };

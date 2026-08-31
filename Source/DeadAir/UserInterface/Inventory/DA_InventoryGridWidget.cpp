@@ -11,7 +11,7 @@
 #include "UserInterface/Inventory/DA_InventoryCellWidget.h"
 #include "Inventory/DA_InventoryComponent.h"
 #include "Inventory/DA_InventoryItem.h"
-#include "UserInterface/Inventory/DA_InventorySlotWidget.h"
+#include "UserInterface/Inventory/DA_InventoryItemWidget.h"
 
 int32 UDA_InventoryGridWidget::GetCellIndex(const FIntPoint& InCoordinates) const
 {
@@ -28,17 +28,17 @@ int32 UDA_InventoryGridWidget::GetCellIndex(const FIntPoint& InCoordinates) cons
 
 void UDA_InventoryGridWidget::ResetCellsToDefaultColor()
 {
-	for (const UDA_InventoryCellWidget* Cell : CellWidgets)
+	for (const UDA_InventoryCellWidget* CellWidget : CellWidgets)
 	{
-		Cell->SetCellColor(Cell->GetDefaultCellColor());
+		CellWidget->SetCellColor(CellWidget->GetDefaultCellColor());
 	}
 }
 
-void UDA_InventoryGridWidget::ChangeSlotsLayer(const int32 Layer)
+void UDA_InventoryGridWidget::ChangeItemsLayer(const int32 Layer)
 {
-	for (UDA_InventorySlotWidget* SlotWidget : SlotWidgets)
+	for (UDA_InventoryItemWidget* ItemWidget : ItemWidgets)
 	{
-		if (UGridSlot* GridSlot = UWidgetLayoutLibrary::SlotAsGridSlot(SlotWidget))
+		if (UGridSlot* GridSlot = UWidgetLayoutLibrary::SlotAsGridSlot(ItemWidget))
 		{
 			GridSlot->SetLayer(Layer);
 		}
@@ -57,7 +57,7 @@ void UDA_InventoryGridWidget::NativeOnInitialized()
 	Grid->ClearChildren();
 	
 	CreateCells();
-	CreateSlots();
+	CreateItems();
 }
 
 void UDA_InventoryGridWidget::CreateCells()
@@ -77,23 +77,23 @@ void UDA_InventoryGridWidget::CreateCells()
 	}
 }
 
-void UDA_InventoryGridWidget::CreateSlots()
+void UDA_InventoryGridWidget::CreateItems()
 {
-	SlotWidgets.Empty();
-	for (const FDA_InventorySlot& Data : Inventory->GetSlots())
+	ItemWidgets.Empty();
+	for (UDA_InventoryItem* Item : Inventory->GetItems())
 	{
-		ENSURE_KISMET(SlotWidgetClass)
+		ENSURE_KISMET(ItemWidgetClass)
 		
-		UDA_InventorySlotWidget* SlotWidget = CreateWidget<UDA_InventorySlotWidget>(GetOwningPlayer(), SlotWidgetClass);
-		check(SlotWidget != nullptr);
+		UDA_InventoryItemWidget* ItemWidget = CreateWidget<UDA_InventoryItemWidget>(GetOwningPlayer(), ItemWidgetClass);
+		check(ItemWidget != nullptr);
 
-		SlotWidgets.Add(SlotWidget);
+		ItemWidgets.Add(ItemWidget);
 		
-		SlotWidget->InitializeSlot(Data, Inventory->GetCellSize());
-		SlotWidget->OnBeginDrag.BindLambda( [this]() { ChangeSlotsLayer(-1); } );
-		SlotWidget->OnEndDrag.BindLambda( [this]() { ChangeSlotsLayer(1); } );
+		ItemWidget->InitializeSlot(Item, Inventory->GetCellSize());
+		ItemWidget->OnBeginDrag.BindLambda( [this]() { ChangeItemsLayer(-1); } );
+		ItemWidget->OnEndDrag.BindLambda( [this]() { ChangeItemsLayer(1); } );
 		
-		OnSlotCreated(SlotWidget);
+		OnItemCreated(ItemWidget);
 	}
 }
 
@@ -108,11 +108,11 @@ void UDA_InventoryGridWidget::OnCellCreated(UDA_InventoryCellWidget* Widget) con
 	}
 }
 
-void UDA_InventoryGridWidget::OnSlotCreated(UDA_InventorySlotWidget* Widget) const
+void UDA_InventoryGridWidget::OnItemCreated(UDA_InventoryItemWidget* Widget) const
 {
 	if (!Widget || !Grid) return;
 
-	if (const UDA_InventoryItem* Item = Widget->GetSlotData().Item)
+	if (const UDA_InventoryItem* Item = Widget->GetItem())
 	{
 		if (UGridSlot* GridSlot = Grid->AddChildToGrid(Widget, Item->GetStartCoordinates().Y, Item->GetStartCoordinates().X))
 		{
@@ -123,7 +123,7 @@ void UDA_InventoryGridWidget::OnSlotCreated(UDA_InventorySlotWidget* Widget) con
 	}
 }
 
-void UDA_InventoryGridWidget::OnSlotRemoved(UDA_InventorySlotWidget* Widget) const
+void UDA_InventoryGridWidget::OnItemRemoved(UDA_InventoryItemWidget* Widget) const
 {
 	if (!Widget || !Grid) return;
 
@@ -132,11 +132,11 @@ void UDA_InventoryGridWidget::OnSlotRemoved(UDA_InventorySlotWidget* Widget) con
 
 void UDA_InventoryGridWidget::OnInventoryUpdated()
 {
-	for (UDA_InventorySlotWidget* SlotWidget : SlotWidgets)
+	for (UDA_InventoryItemWidget* ItemWidget : ItemWidgets)
 	{
-		OnSlotRemoved(SlotWidget);
+		OnItemRemoved(ItemWidget);
 	}
 
-	CreateSlots();
+	CreateItems();
 }
 

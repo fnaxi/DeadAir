@@ -8,7 +8,7 @@
 
 class UDA_InventoryComponent;
 class UDA_InventoryCellWidget;
-class UDA_InventorySlotWidget;
+class UDA_InventoryItemWidget;
 
 /**
  * 
@@ -25,12 +25,12 @@ public:
 	/** Reset all grid cells to their default color. */
 	void ResetCellsToDefaultColor();
 
-	void ChangeSlotsLayer(int32 Layer);
+	void ChangeItemsLayer(int32 Layer);
 	
 	virtual void NativeOnInitialized() override;
 	
 	FORCEINLINE TArray<TObjectPtr<UDA_InventoryCellWidget>> GetCellWidgets() const { return CellWidgets; }
-	FORCEINLINE TArray<TObjectPtr<UDA_InventorySlotWidget>> GetSlotWidgets() const { return SlotWidgets; }
+	FORCEINLINE TArray<TObjectPtr<UDA_InventoryItemWidget>> GetItemWidgets() const { return ItemWidgets; }
 	
 protected:
 	UPROPERTY(meta=(BindWidget))
@@ -40,25 +40,25 @@ protected:
 	TSubclassOf<UDA_InventoryCellWidget> CellWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UDA_InventorySlotWidget> SlotWidgetClass;
+	TSubclassOf<UDA_InventoryItemWidget> ItemWidgetClass;
 
 private:
 	UPROPERTY()
 	TArray<TObjectPtr<UDA_InventoryCellWidget>> CellWidgets;
 
 	UPROPERTY()
-	TArray<TObjectPtr<UDA_InventorySlotWidget>> SlotWidgets;
+	TArray<TObjectPtr<UDA_InventoryItemWidget>> ItemWidgets;
 	
 	UPROPERTY()
 	TWeakObjectPtr<UDA_InventoryComponent> Inventory;
 	
 	void CreateCells();
-	void CreateSlots();
+	void CreateItems();
 	
 	void OnCellCreated(UDA_InventoryCellWidget* Widget) const;
 	
-	void OnSlotCreated(UDA_InventorySlotWidget* Widget) const;
-	void OnSlotRemoved(UDA_InventorySlotWidget* Widget) const;
+	void OnItemCreated(UDA_InventoryItemWidget* Widget) const;
+	void OnItemRemoved(UDA_InventoryItemWidget* Widget) const;
 	
 	void OnInventoryUpdated();
 };

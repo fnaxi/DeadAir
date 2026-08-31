@@ -44,6 +44,8 @@ void ADA_WeaponBase::MakeShoot()
 
 	FHitResult HitResult;
 	MakeHit(HitResult, TraceStart, TraceEnd);
+
+	OnShoot.Broadcast();
 }
 
 void ADA_WeaponBase::MakeHit(FHitResult& OutHitResult, const FVector& OutTraceStart, const FVector& OutTraceEnd)

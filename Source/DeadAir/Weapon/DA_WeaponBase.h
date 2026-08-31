@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "DA_WeaponBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDA_OnShootSignature);
+
 /**
  * 
  */
@@ -18,6 +20,9 @@ public:
 	// Sets default values for this actor's properties
 	ADA_WeaponBase();
 
+	UPROPERTY(BlueprintAssignable)
+	FDA_OnShootSignature OnShoot;
+	
 	UFUNCTION(BlueprintCallable)
 	void StartFire();
 
@@ -33,13 +38,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
 	FName MuzzleSocketName = TEXT("s_muzzle");
 	
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 200, ClampMax = 1200), Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Weapon, meta=(ClampMin = 200, ClampMax = 1200))
 	int32 RoundsPerMinute = 625;
 	
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Weapon, meta=(ClampMin = 1000, ClampMax = 10000))
 	float MaxShootDistance = 3000.0f;
 	
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 1, ClampMax = 2.5), Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = Weapon, meta=(ClampMin = 1, ClampMax = 2.5))
 	float BulletSpread = 1.25f;
 
 	//@TODO: WeaponDefinition

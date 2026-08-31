@@ -5,6 +5,11 @@
 
 #include "Inventory/DA_InventoryItemDefinition.h"
 
+UDA_InventoryItem::UDA_InventoryItem(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+}
+
 void UDA_InventoryItem::SetOwningInventory(UDA_InventoryComponent* InInventory)
 {
 	OwnerInventory = InInventory;
@@ -36,43 +41,6 @@ TArray<FIntPoint> UDA_InventoryItem::GetSizeInCells() const
 	return ItemSize;
 }
 
-/*void UDA_InventoryItem::Rotate()
-{
-	if (bIsRotated)
-	{
-		Size = CachedSize;
-		SizeInCells = CachedSizeInCells;
-
-		bIsRotated = false;
-
-		HandleItemRotation();
-		//OwnerInventory->HandleInventoryUpdate();
-
-		return;
-	}
-
-	SizeInCells.Empty();
-
-	for (const FIntPoint& Coordinates : CachedSizeInCells)
-	{
-		FIntPoint InvertedCoordinates = FIntPoint(Coordinates.Y, Coordinates.X);
-		SizeInCells.Add(InvertedCoordinates);	
-	}
-
-	const FIntPoint InvertedSize = FIntPoint(CachedSize.Y, CachedSize.X);
-	Size = InvertedSize;
-
-	bIsRotated = true;
-
-	HandleItemRotation();
-	//OwnerInventory->HandleInventoryUpdate();
-}*/
-
-/*void UDA_InventoryItem::HandleItemRotation()
-{
-	OnItemRotated.Broadcast();
-}*/
-
 FIntPoint UDA_InventoryItem::GetCoordinatesFromHover(const FIntPoint& HoveredCoordinates) const
 {
 	return FIntPoint(HoveredCoordinates.X - ((GetSize().X - 1) / 2), HoveredCoordinates.Y - ((GetSize().Y - 1) / 2));
@@ -90,7 +58,7 @@ FText UDA_InventoryItem::GetItemDescription() const
 
 FIntPoint UDA_InventoryItem::GetSize() const
 {
-	return Definition ? Definition->Size : FIntPoint(1);;
+	return Definition ? Definition->Size : FIntPoint(1);
 }
 
 FIntPoint UDA_InventoryItem::GetAtlasCoordinates() const

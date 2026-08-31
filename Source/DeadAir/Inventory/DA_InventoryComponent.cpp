@@ -32,9 +32,9 @@ bool UDA_InventoryComponent::IsWithinBoundaries(const FIntPoint& Coordinates) co
 
 void UDA_InventoryComponent::Initialize()
 {
-	Slots.Empty();
-	Cells.Empty();
+	Items.Empty();
 	
+	Cells.Empty();
 	for (int32 Y = 0; Y < GridSize.Y; Y++)
 	{
 		for (int32 X = 0; X < GridSize.X; X++)
@@ -43,7 +43,6 @@ void UDA_InventoryComponent::Initialize()
 		}
 	}
 
-	OnInventoryInitialized.Broadcast();
 	UE_LOG(X_Inventory, Log, TEXT("%s: Initialized inventory"), *GetOwner()->GetName())
 }
 
@@ -55,14 +54,14 @@ bool UDA_InventoryComponent::IsFree(const FIntPoint& Coordinates, const UDA_Inve
 		return false;
 	}
 
-	for (const FDA_InventorySlot& Slot : GetSlots())
+	for (const UDA_InventoryItem* Item : GetItems())
 	{
-		if (ItemToIgnore && Slot.Item == ItemToIgnore) continue;
+		if (ItemToIgnore && Item == ItemToIgnore) continue;
 		
-		for (const FIntPoint& Cell : Slot.Item->GetSizeInCells())
+		for (const FIntPoint& Cell : Item->GetSizeInCells())
 		{
-			if (Slot.Item->GetStartCoordinates().X + Cell.X == Coordinates.X &&
-				Slot.Item->GetStartCoordinates().Y + Cell.Y == Coordinates.Y)
+			if (Item->GetStartCoordinates().X + Cell.X == Coordinates.X &&
+				Item->GetStartCoordinates().Y + Cell.Y == Coordinates.Y)
 			{
 				// The cell at these coordinates is not empty.
 				return false;
@@ -108,18 +107,18 @@ FIntPoint UDA_InventoryComponent::GetFreeCellThatFitsItem(TArray<FIntPoint> cons
 	return FoundCoordinates ? *FoundCoordinates : FIntPoint(-1);
 }
 
-bool UDA_InventoryComponent::AddItem(const FDA_InventorySlot& Slot)
+bool UDA_InventoryComponent::AddItem(UDA_InventoryItem* Item)
 {
-	if (AreCoordinatesValid(Slot.Item->GetStartCoordinates())) //@TODO: check that cell is free
+	if (AreCoordinatesValid(Item->GetStartCoordinates())) //@TODO: check that cell is free
 	{
-		Slots.Add(Slot);
-		UE_LOG(X_Inventory, Verbose, TEXT("%s: Added \"%s\" item"), *GetOwner()->GetName(), *Slot.Item->GetItemName().ToString())
+		Items.Add(Item);
+		UE_LOG(X_Inventory, Verbose, TEXT("%s: Added \"%s\" item"), *GetOwner()->GetName(), *Item->GetItemName().ToString())
 	
 		NotifyInventoryUpdated();
 		return true;
 	}
 	
-	UE_LOG(X_Inventory, Log, TEXT("%s: Can't add \"%s\" item!"), *GetOwner()->GetName(), *Slot.Item->GetItemName().ToString())
+	UE_LOG(X_Inventory, Log, TEXT("%s: Can't add \"%s\" item!"), *GetOwner()->GetName(), *Item->GetItemName().ToString())
 	return false;
 }
 
@@ -156,41 +155,40 @@ void UDA_InventoryComponent::AddNewItemByName(const FString& ItemName)
 
 bool UDA_InventoryComponent::AddNewItem(UDA_InventoryItemDefinition* Definition, const int32 Quantity)
 {
-	UDA_InventoryItem* Item = CreateItem(Definition);
+	UDA_InventoryItem* Item = CreateItem(Definition); //@TODO: Use quantity
 	if (Item == nullptr) return false;
 	
 	const FIntPoint Coordinates = GetFreeCellThatFitsItem(Item->GetSizeInCells());
 	Item->SetStartCoordinates(Coordinates);
 
-	const FDA_InventorySlot Slot = FDA_InventorySlot(Item, Quantity);
-	return AddItem(Slot);
+	return AddItem(Item);
 }
 
-bool UDA_InventoryComponent::RemoveItem(const FDA_InventorySlot& Slot)
+bool UDA_InventoryComponent::RemoveItem(UDA_InventoryItem* Item)
 {
-	Slots.Remove(Slot);
-	UE_LOG(X_Inventory, Verbose, TEXT("%s: Removed \"%s\" item"), *GetOwner()->GetName(), *Slot.Item->GetItemName().ToString())
+	Items.Remove(Item);
+	UE_LOG(X_Inventory, Verbose, TEXT("%s: Removed \"%s\" item"), *GetOwner()->GetName(), *Item->GetItemName().ToString())
 	
 	return true;
 }
 
-bool UDA_InventoryComponent::MoveItem(const FDA_InventorySlot& InSlot, const FIntPoint& Destination)
+bool UDA_InventoryComponent::MoveItem(const UDA_InventoryItem* InItem, const FIntPoint& Destination)
 {	
-	for (const FDA_InventorySlot& Slot : Slots)
+	for (UDA_InventoryItem* Item : Items)
 	{
-		if (Slot != InSlot) continue;
+		if (Item != InItem) continue; //@TODO: Predicate?
 		
-		if (DoesItemFit(Slot.Item->GetSizeInCells(), Destination, Slot.Item))
+		if (DoesItemFit(Item->GetSizeInCells(), Destination, Item))
 		{
-			Slot.Item->SetStartCoordinates(Destination);
-			UE_LOG(X_Inventory, Log, TEXT("%s: Moved \"%s\" item to %s coordinates"), *GetOwner()->GetName(), *Slot.Item->GetItemName().ToString(), *Destination.ToString())
+			Item->SetStartCoordinates(Destination);
+			UE_LOG(X_Inventory, Log, TEXT("%s: Moved \"%s\" item to %s coordinates"), *GetOwner()->GetName(), *Item->GetItemName().ToString(), *Destination.ToString())
 			
 			NotifyInventoryUpdated();
 			return true;
 		}
 	}
 
-	UE_LOG(X_Inventory, Log, TEXT("%s: Item \"%s\" can't be moved to %s coordinates!"), *GetOwner()->GetName(), *InSlot.Item->GetItemName().ToString(), *Destination.ToString())
+	UE_LOG(X_Inventory, Log, TEXT("%s: Item \"%s\" can't be moved to %s coordinates!"), *GetOwner()->GetName(), *InItem->GetItemName().ToString(), *Destination.ToString())
 	return false;
 }
 

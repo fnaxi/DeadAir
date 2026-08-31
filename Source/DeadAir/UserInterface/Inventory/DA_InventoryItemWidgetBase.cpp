@@ -1,29 +1,29 @@
 // CopyRight © Dead Air Game. All Rights Reserved.
 
 
-#include "UserInterface/Inventory/DA_InventorySlotWidgetBase.h"
+#include "UserInterface/Inventory/DA_InventoryItemWidgetBase.h"
 
 #include "Components/Image.h"
 #include "Components/SizeBox.h"
 #include "Inventory/DA_InventoryItem.h"
 
-void UDA_InventorySlotWidgetBase::InitializeSlot(const FDA_InventorySlot& InSlotData, const float InSize)
+void UDA_InventoryItemWidgetBase::InitializeSlot(UDA_InventoryItem* InItem, const float InSize)
 {
-	SlotData = InSlotData;
+	Item = InItem;
 
 	SetSlotSize(InSize);
-	ChangeIcon(SlotData.Item->GetAtlasCoordinates(), SlotData.Item->GetSize());
+	ChangeIcon(Item->GetAtlasCoordinates(), Item->GetSize());
 }
 
-void UDA_InventorySlotWidgetBase::SetSlotSize(const float Size) const
+void UDA_InventoryItemWidgetBase::SetSlotSize(const float Size) const
 {
-	const FVector2D NewSize = FVector2D(SlotData.Item->GetSize().X * Size, SlotData.Item->GetSize().Y * Size);
+	const FVector2D NewSize = FVector2D(Item->GetSize().X * Size, Item->GetSize().Y * Size);
 
 	Box->SetWidthOverride(NewSize.X);
 	Box->SetHeightOverride(NewSize.Y);
 }
 
-void UDA_InventorySlotWidgetBase::ChangeIcon(const FIntPoint& Coordinates, const FIntPoint& Size)
+void UDA_InventoryItemWidgetBase::ChangeIcon(const FIntPoint& Coordinates, const FIntPoint& Size)
 {
 	UMaterialInterface* BaseMaterial = Cast<UMaterialInterface>(Icon->GetBrush().GetResourceObject());
 	if (!ensure(BaseMaterial)) return;

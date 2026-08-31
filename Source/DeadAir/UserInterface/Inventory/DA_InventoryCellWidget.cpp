@@ -8,10 +8,10 @@
 #include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
 #include "Inventory/DA_InventoryItem.h"
-#include "UserInterface/Inventory/DA_InventorySlotWidget.h"
-#include "UserInterface/Inventory/DA_InventoryDraggedSlotWidget.h"
+#include "UserInterface/Inventory/DA_InventoryItemWidget.h"
+#include "UserInterface/Inventory/DA_InventoryDraggedItemWidget.h"
 #include "UserInterface/Inventory/DA_InventoryGridWidget.h"
-#include "UserInterface/Inventory/DA_InventorySlot_DragDropOperation.h"
+#include "UserInterface/Inventory/DA_InventoryItem_DragDropOperation.h"
 
 void UDA_InventoryCellWidget::InitializeCell(const FIntPoint& InCoordinates, UDA_InventoryGridWidget* InGrid, const float InSize)
 {
@@ -46,13 +46,13 @@ void UDA_InventoryCellWidget::NativeOnDragEnter(const FGeometry& InGeometry, con
 {
 	Super::NativeOnDragEnter(InGeometry, InDragDropEvent, InOperation);
 	
-	if (!InOperation || !InOperation->IsA<UDA_InventorySlot_DragDropOperation>()) return;
+	if (!InOperation || !InOperation->IsA<UDA_InventoryItem_DragDropOperation>()) return;
 
 	Grid->ResetCellsToDefaultColor();
 	
-	const UDA_InventoryDraggedSlotWidget* DraggedSlot = CastChecked<UDA_InventoryDraggedSlotWidget>(InOperation->DefaultDragVisual);
+	const UDA_InventoryDraggedItemWidget* DraggedSlot = CastChecked<UDA_InventoryDraggedItemWidget>(InOperation->DefaultDragVisual);
 
-	const UDA_InventoryItem* Item = DraggedSlot->GetSlotData().Item;
+	const UDA_InventoryItem* Item = DraggedSlot->GetItem();
 	for (const FIntPoint& Element : Item->GetSizeInCells())
 	{
 		FIntPoint TargetCoordinates = Item->GetCoordinatesFromHover(Coordinates);
@@ -93,17 +93,17 @@ bool UDA_InventoryCellWidget::NativeOnDrop(const FGeometry& InGeometry, const FD
 {
 	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 
-	if (!InOperation || !InOperation->IsA<UDA_InventorySlot_DragDropOperation>()) return false;
+	if (!InOperation || !InOperation->IsA<UDA_InventoryItem_DragDropOperation>()) return false;
 
 	Grid->ResetCellsToDefaultColor();
 	
-	const UDA_InventoryDraggedSlotWidget* DraggedWidget = CastChecked<UDA_InventoryDraggedSlotWidget>(InOperation->DefaultDragVisual);
-	const FDA_InventorySlot SlotData = DraggedWidget->GetSlotData();
+	const UDA_InventoryDraggedItemWidget* DraggedWidget = CastChecked<UDA_InventoryDraggedItemWidget>(InOperation->DefaultDragVisual);
+	const UDA_InventoryItem* Item = DraggedWidget->GetItem();
 
-	UDA_InventoryComponent* Inventory = SlotData.Item->GetOwnerInventory();
+	UDA_InventoryComponent* Inventory = Item->GetOwnerInventory();
 	if (ensure(Inventory != nullptr))
 	{
-		Inventory->MoveItem(SlotData, SlotData.Item->GetCoordinatesFromHover(Coordinates));
+		Inventory->MoveItem(Item, Item->GetCoordinatesFromHover(Coordinates));
 	}
 	
 	return true;

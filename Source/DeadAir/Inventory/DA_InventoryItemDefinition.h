@@ -6,6 +6,8 @@
 #include "Engine/DataAsset.h"
 #include "DA_InventoryItemDefinition.generated.h"
 
+class UDA_InventoryItem;
+
 /**
  * 
  */
@@ -32,7 +34,7 @@ public:
 	float Weight = 0.5f;
 
 	UPROPERTY(EditDefaultsOnly, Category = General)
-	TSubclassOf<class UDA_InventoryItem> ItemClass;
+	TSubclassOf<UDA_InventoryItem> ItemClass;
 
 	//@TODO: Fragments
 };
