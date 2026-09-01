@@ -13,7 +13,9 @@
 #include "Input/DA_InputComponent.h"
 #include "Inventory/DA_InventoryComponent.h"
 #include "DA_GameplayTags.h"
+#include "Equipment/DA_EquipmentComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Weapon/DA_WeaponBase.h"
 
 // Sets default values
 ADA_Character::ADA_Character()
@@ -28,6 +30,7 @@ ADA_Character::ADA_Character()
 	Hand->SetupAttachment(Camera);
 	
 	InventoryComponent = CreateDefaultSubobject<UDA_InventoryComponent>(TEXT("Inventory"));
+	EquipmentComponent = CreateDefaultSubobject<UDA_EquipmentComponent>(TEXT("Equipment"));
 	AbilitySystemComponent = CreateDefaultSubobject<UDA_AbilitySystemComponent>(TEXT("AbilitySystem"));
 }
 
@@ -52,16 +55,16 @@ void ADA_Character::BeginPlay()
 
 	ENSURE_KISMET(AbilitySet)
 	AbilitySet->GiveToAbilitySystem(AbilitySystemComponent.Get(), nullptr);
-}
 
-void ADA_Character::Input_AbilityInputTagPressed(FGameplayTag InputTag)
-{
-	AbilitySystemComponent->AbilityInputTagPressed(InputTag);
-}
-
-void ADA_Character::Input_AbilityInputTagReleased(FGameplayTag InputTag)
-{
-	AbilitySystemComponent->AbilityInputTagReleased(InputTag);
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Owner = this;
+	
+	ENSURE_KISMET(WeaponClass)
+	Weapon = GetWorld()->SpawnActor<ADA_WeaponBase>(WeaponClass, SpawnParameters);
+	if (Weapon)
+	{
+		Weapon->AttachToComponent(Hand, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("s_lead_gun"));
+	}
 }
 
 // Called every frame
@@ -86,25 +89,38 @@ void ADA_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	Subsystem->ClearAllMappings();
 	
-	UDA_InputComponent* DeadAirInputComponent = Cast<UDA_InputComponent>(PlayerInputComponent);
-	if (ensureMsgf(DeadAirInputComponent, TEXT("Unexpected Input Component class! The Gameplay Abilities will not be bound to their inputs. Change the input component to UDA_InputComponent or a subclass of it.")))
+	UDA_InputComponent* EnhancedInput = Cast<UDA_InputComponent>(PlayerInputComponent);
+	if (ensureMsgf(EnhancedInput, TEXT("Unexpected Input Component class! The Gameplay Abilities will not be bound to their inputs. Change the input component to UDA_InputComponent or a subclass of it.")))
 	{
 		ENSURE_KISMET(InputConfig)
 		
 		// Add the key mappings that may have been set by the player
-		DeadAirInputComponent->AddInputMappings(InputConfig, Subsystem);
+		EnhancedInput->AddInputMappings(InputConfig, Subsystem);
 
 		// This is where we actually bind and input action to a gameplay tag, which means that Gameplay Ability Blueprints will
 		// be triggered directly by these input actions Triggered events. 
 		TArray<uint32> BindHandles;
-		DeadAirInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+		EnhancedInput->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
 
-		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);
-		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
-		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Look_Stick, ETriggerEvent::Triggered, this, &ThisClass::Input_LookStick, false);
-		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Jump, ETriggerEvent::Started, this, &Super::Jump, false);
-		DeadAirInputComponent->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Crouch, ETriggerEvent::Started, this, &ThisClass::Input_Crouch, false);
+		EnhancedInput->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move, false);
+		EnhancedInput->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Look_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_LookMouse, false);
+		EnhancedInput->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Look_Stick, ETriggerEvent::Triggered, this, &ThisClass::Input_LookStick, false);
+
+		//@TODO: Make jump an ability
+		EnhancedInput->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Jump, ETriggerEvent::Started, this, &Super::Jump, false);
+
+		EnhancedInput->BindNativeAction(InputConfig, DeadAirGameplayTags::InputTag_Crouch, ETriggerEvent::Started, this, &ThisClass::Input_Crouch, false);
 	}
+}
+
+void ADA_Character::Input_AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	AbilitySystemComponent->AbilityInputTagPressed(InputTag);
+}
+
+void ADA_Character::Input_AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	AbilitySystemComponent->AbilityInputTagReleased(InputTag);
 }
 
 void ADA_Character::Input_Move(const FInputActionValue& InputValue)
@@ -159,7 +175,7 @@ void ADA_Character::Input_LookStick(const FInputActionValue& InputValue)
 	}
 }
 
-void ADA_Character::Input_Crouch(const FInputActionValue& InputActionValue)
+void ADA_Character::Input_Crouch(const FInputActionValue& InputValue)
 {
 	const UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
 	if (IsCrouched() || MovementComponent->bWantsToCrouch)

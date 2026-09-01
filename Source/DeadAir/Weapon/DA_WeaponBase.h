@@ -28,7 +28,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StopFire();
-
+	
+	UFUNCTION(BlueprintPure)
 	FORCEINLINE bool IsFiring() const { return bFireInProgress; }
 	
 protected:

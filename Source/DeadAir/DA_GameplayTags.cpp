@@ -19,7 +19,9 @@ namespace DeadAirGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Jump,			"InputTag.Jump");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Crouch,			"InputTag.Crouch");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Inventory,		"InputTag.Inventory");
-
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Weapon_Fire,	"InputTag.Weapon.Fire");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Weapon_Aim,		"InputTag.Weapon.Aim");
+	
 	FGameplayTag FindTagByString(const FString& TagString, bool bMatchPartialString)
 	{
 		const UGameplayTagsManager& Manager = UGameplayTagsManager::Get();
